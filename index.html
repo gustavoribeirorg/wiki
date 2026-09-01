@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Wiki: servidor, Termux, Jekyll e Cloudflare Tunnel</title>
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-color: #1e293b;
+      --text-muted: #64748b;
+      --accent-color: #2563eb;
+      --accent-hover: #1d4ed8;
+      --border-color: #e2e8f0;
+      --code-bg: #0f172a;
+      --code-text: #f8fafc;
+      --inline-code-bg: #e2e8f0;
+      --inline-code-text: #0f172a;
+      --warning-bg: #fffbeb;
+      --warning-border: #f59e0b;
+      --warning-text: #b45309;
+      --success-bg: #f0fdf4;
+      --success-border: #22c55e;
+      --success-text: #15803d;
+      --sidebar-width: 320px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Navegação lateral fixa */
+    nav.sidebar {
+      width: var(--sidebar-width);
+      background-color: var(--card-bg);
+      border-right: 1px solid var(--border-color);
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      overflow-y: auto;
+      padding: 24px 14px;
+      z-index: 10;
+    }
+
+    nav.sidebar h2 {
+      font-size: 0.95rem;
+      margin-bottom: 16px;
+      color: var(--text-color);
+      font-weight: 700;
+      border-bottom: 2px solid var(--accent-color);
+      padding-bottom: 8px;
+    }
+
+    nav.sidebar ul {
+      list-style: none;
+    }
+
+    nav.sidebar li {
+      margin-bottom: 4px;
+    }
+
+    nav.sidebar a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.82rem;
+      display: block;
+      padding: 5px 8px;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      line-height: 1.35;
+    }
+
+    nav.sidebar a.nav-main {
+      font-weight: 600;
+      color: #334155;
+    }
+
+    nav.sidebar a:hover {
+      background-color: #eff6ff;
+      color: var(--accent-color);
+    }
+
+    /* Sub-listas na barra lateral */
+    nav.sidebar ul.sub-menu {
+      padding-left: 12px;
+      margin: 2px 0 6px 0;
+      border-left: 2px solid var(--border-color);
+    }
+
+    nav.sidebar ul.sub-menu li {
+      margin-bottom: 2px;
+    }
+
+    nav.sidebar ul.sub-menu a {
+      font-size: 0.78rem;
+      color: #64748b;
+      padding: 3px 6px;
+    }
+
+    /* Conteúdo principal */
+    main.content {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      padding: 40px 48px;
+      max-width: 1020px;
+    }
+
+    header.wiki-header {
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 24px;
+    }
+
+    header.wiki-header h1 {
+      font-size: 2.1rem;
+      color: #0f172a;
+      margin-bottom: 12px;
+      line-height: 1.25;
+    }
+
+    header.wiki-header p {
+      color: var(--text-muted);
+      font-size: 1.05rem;
+    }
+
+    section.wiki-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 28px;
+      margin-bottom: 32px;
+      scroll-margin-top: 24px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      color: #0f172a;
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border-color);
+      scroll-margin-top: 24px;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      color: #1e293b;
+      margin: 24px 0 10px 0;
+      scroll-margin-top: 24px;
+    }
+
+    h4 {
+      font-size: 0.98rem;
+      color: #334155;
+      margin: 16px 0 8px 0;
+      scroll-margin-top: 24px;
+    }
+
+    p, ul, ol {
+      margin-bottom: 14px;
+      color: #334155;
+    }
+
+    ul, ol {
+      padding-left: 24px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    /* Blocos de código */
+    pre {
+      background-color: var(--code-bg);
+      color: var(--code-text);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      font-size: 0.88rem;
+      margin: 12px 0 16px 0;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+      background-color: var(--inline-code-bg);
+      color: var(--inline-code-text);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.88rem;
+    }
+
+    pre code {
+      background-color: transparent;
+      color: inherit;
+      padding: 0;
+    }
+
+    /* Caixas informativas */
+    .callout {
+      border-left: 4px solid var(--accent-color);
+      background-color: #f8fafc;
+      padding: 14px 18px;
+      border-radius: 0 8px 8px 0;
+      margin: 16px 0;
+      font-size: 0.95rem;
+    }
+
+    .callout-warning {
+      border-left-color: var(--warning-border);
+      background-color: var(--warning-bg);
+      color: var(--warning-text);
+    }
+
+    .callout-success {
+      border-left-color: var(--success-border);
+      background-color: var(--success-bg);
+      color: var(--success-text);
+    }
+
+    /* Tabela de erros e comandos */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 0.92rem;
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #f1f5f9;
+      color: #0f172a;
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    /* Voltar ao topo */
+    .back-to-top {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: var(--accent-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .back-to-top:hover {
+      text-decoration: underline;
+    }
+
+    /* Responsividade */
+    @media (max-width: 900px) {
+      body {
+        flex-direction: column;
+      }
+      nav.sidebar {
+        position: relative;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+        max-height: 320px;
+      }
+      main.content {
+        margin-left: 0;
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navegação lateral e tabela de conteúdo -->
+  <nav class="sidebar">
+    <h2>Tabela de conteúdo</h2>
+    <ul>
+      <li>
+        <a href="#conexao-ssh" class="nav-main">1. Conexão SSH no Termux</a>
+        <ul class="sub-menu">
+          <li><a href="#descobrir-usuario">Nome de usuário</a></li>
+          <li><a href="#acesso-computador">Acesso via computador</a></li>
+          <li><a href="#conectar-remoto">Conexão a servidor remoto</a></li>
+          <li><a href="#finalizar-ssh">Finalizar o serviço SSH</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#servidores-web" class="nav-main">2. Servidores web (Python e Nginx)</a>
+        <ul class="sub-menu">
+          <li><a href="#python-http">Servidor HTTP em Python</a></li>
+          <li><a href="#migracao-nginx">Migração para o Nginx</a></li>
+          <li><a href="#verificar-portas">Verificação de processos e portas</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#fluxo-jekyll" class="nav-main">3. Compilação e envio do Jekyll</a>
+        <ul class="sub-menu">
+          <li><a href="#bundler-install">Bundler e dependências</a></li>
+          <li><a href="#bundle-exec">Prefixo bundle exec</a></li>
+          <li><a href="#compilacao-site">Compilação para arquivos estáticos</a></li>
+          <li><a href="#fluxo-transferencia">Fluxo de build e transferência</a></li>
+          <li><a href="#linkagem-jekyll">Linkagem interna no Jekyll</a></li>
+          <li><a href="#jekyll-32bits">Compatibilidade em 32 bits</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#otimizacao-imagens" class="nav-main">4. Imagens e scripts Python</a>
+        <ul class="sub-menu">
+          <li><a href="#conversao-imagemagick">ImageMagick e rotação EXIF</a></li>
+          <li><a href="#compatibilidade-python">Compatibilidade no Python 3.6</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#pagina-404" class="nav-main">5. Página 404 personalizada no Nginx</a>
+        <ul class="sub-menu">
+          <li><a href="#config-404">Configuração no nginx.conf</a></li>
+          <li><a href="#testar-404">Testes da página de erro</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#cloudflare-tunnel" class="nav-main">6. Publicação com Cloudflare Tunnel</a>
+        <ul class="sub-menu">
+          <li><a href="#instalacao-cloudflared">Instalação no cliente</a></li>
+          <li><a href="#testes-rapidos-tunnel">Testes rápidos locais</a></li>
+          <li><a href="#config-dominio-proprio">Configuração com domínio</a></li>
+          <li><a href="#gerenciamento-tunnels-cli">Gerenciamento via CLI</a></li>
+          <li><a href="#rotear-desrotear-subdominios">Rotear e desrotear subdomínios</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#seguranca-waf" class="nav-main">7. Segurança, WAF e bloqueio de robôs</a>
+        <ul class="sub-menu">
+          <li><a href="#bloqueio-cloudflare">Bloqueio na Cloudflare</a></li>
+          <li><a href="#bloqueio-exploits-nginx">Regras contra exploits no Nginx</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#execucao-continua" class="nav-main">8. Sessões e persistência com Tmux</a>
+        <ul class="sub-menu">
+          <li><a href="#evitar-suspensao-android">Evitar suspensão no Android</a></li>
+          <li><a href="#gerenciamento-tmux">Gerenciamento de sessões</a></li>
+          <li><a href="#janelas-tmux">Múltiplas janelas e painéis</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#ssh-remoto" class="nav-main">9. SSH remoto via Cloudflare</a>
+        <ul class="sub-menu">
+          <li><a href="#ssh-config-servidor">Configuração no servidor</a></li>
+          <li><a href="#ssh-linux-macos">Acesso via Linux e macOS</a></li>
+          <li><a href="#ssh-windows">Acesso via Windows</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#gestao-arquivos-git" class="nav-main">10. Arquivos e Git (SCP, Rsync e fluxo Git)</a>
+        <ul class="sub-menu">
+          <li><a href="#transferencia-rsync">Transferência com Rsync e SCP</a></li>
+          <li><a href="#barra-rsync-scp">Uso da barra no Rsync e SCP</a></li>
+          <li><a href="#autenticacao-github">Autenticação no GitHub</a></li>
+          <li><a href="#git-inicializacao-remoto">Inicialização e repositório remoto</a></li>
+          <li><a href="#git-fluxo-trabalho">Fluxo de trabalho diário e commits</a></li>
+          <li><a href="#git-branches-merge">Gerenciamento de branches e merge</a></li>
+          <li><a href="#git-cache-gitignore">Limpeza de cache, remoção e .gitignore</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#logs-goaccess" class="nav-main">11. Logs, GoAccess e IP real</a>
+        <ul class="sub-menu">
+          <li><a href="#capturar-ip-real">IP real no Nginx</a></li>
+          <li><a href="#monitoramento-logs-terminal">Logs pelo terminal</a></li>
+          <li><a href="#exibir-logs-navegador">Logs no navegador</a></li>
+          <li><a href="#painel-goaccess">Painel visual com GoAccess</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#solucao-problemas" class="nav-main">12. Resolução de problemas</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Conteúdo principal -->
+  <main class="content">
+    <header class="wiki-header" id="topo">
+      <h1>Guia técnico de servidor, Termux, Jekyll e Cloudflare Tunnel</h1>
+      <p>Manual prático para hospedagem de sites estáticos no Android, automação de túneis seguros na Cloudflare, compilação com Jekyll, gerenciamento via SSH, controle de versão com Git e sincronização com Rsync.</p>
+    </header>
+
+    <!-- Seção 1: Conexão SSH -->
+    <section id="conexao-ssh" class="wiki-section">
+      <h2>1. Conexão SSH no Termux</h2>
+      <p>O OpenSSH permite controlar o terminal do celular remotamente a partir de um computador na mesma rede local ou gerenciar servidores externos direto do celular.</p>
+
+      <h3 id="descobrir-usuario">Como descobrir o nome de usuário do Termux</h3>
+      <p>No terminal do celular, execute um dos comandos abaixo para ver o identificador do seu usuário (normalmente algo como <code>u0_a229</code>):</p>
+      <pre><code>whoami
+# ou
+id -un</code></pre>
+
+      <h3 id="acesso-computador">Acessar o Termux a partir do computador</h3>
+      <ol>
+        <li>No Termux, instale o pacote OpenSSH e defina uma senha de acesso:
+          <pre><code>pkg install openssh
+passwd</code></pre>
+        </li>
+        <li>Descubra o endereço IP local do celular:
+          <pre><code>ifconfig
+# ou
+ip a</code></pre>
+        </li>
+        <li>Inicie o serviço do servidor SSH no celular:
+          <pre><code>sshd</code></pre>
+        </li>
+        <li>No terminal do computador, conecte-se utilizando a porta padrão do Termux (<code>8022</code>) e o usuário identificado com <code>whoami</code>:
+          <pre><code>ssh usuario@IP_DO_CELULAR -p 8022
+# Exemplo:
+ssh u0_a229@192.168.3.33 -p 8022</code></pre>
+        </li>
+      </ol>
+
+      <h3 id="conectar-remoto">Conectar do Termux a um servidor remoto</h3>
+      <p>Para abrir uma sessão SSH a partir do Termux em direção a outro servidor:</p>
+      <pre><code>ssh usuario@ip_do_servidor
+# Caso utilize porta personalizada:
+ssh usuario@ip_do_servidor -p numero_da_porta</code></pre>
+
+      <h3 id="finalizar-ssh">Finalizar o serviço SSH</h3>
+      <p>Para encerrar o servidor SSH no Termux quando terminar:</p>
+      <pre><code>pkill sshd</code></pre>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 2: Servidores Web -->
+    <section id="servidores-web" class="wiki-section">
+      <h2>2. Servidores web (Python e Nginx)</h2>
+      <p>Para hospedar páginas estáticas no celular, você pode utilizar o módulo HTTP nativo do Python para testes ou migrar para o Nginx para maior eficiência de memória e bateria.</p>
+
+      <h3 id="python-http">Servidor HTTP simples em Python</h3>
+      <p>Adequado para testes rápidos de arquivos em uma pasta:</p>
+      <pre><code>pkg install python
+cd ~/meu-site
+python -m http.server 8080 &amp;</code></pre>
+      <p>Para manter o servidor Python rodando em segundo plano sem travar o terminal (usando <code>nohup</code>):</p>
+      <pre><code>cd ~/gustavoribeiro-net/_site &amp;&amp; nohup python3 -m http.server 8080 &gt; /dev/null 2&gt;&amp;1 &amp;</code></pre>
+      <p>Para encerrar o servidor Python executado via <code>nohup</code> ou em segundo plano: <code>pkill -f "http.server"</code>.</p>
+
+      <h3 id="migracao-nginx">Migração para o Nginx (recomendado)</h3>
+      <p>O Nginx consome significativamente menos bateria e memória RAM do que o Python, processa arquivos estáticos com mais agilidade e gerencia cabeçalhos de proxy nativamente.</p>
+
+      <h4>1. Instalar o Nginx</h4>
+      <pre><code>pkg update &amp;&amp; pkg install nginx -y</code></pre>
+
+      <h4>2. Configurar a pasta e a porta</h4>
+      <p>Abra a configuração principal com <code>nano $PREFIX/etc/nginx/nginx.conf</code> e ajuste o bloco <code>server</code>:</p>
+      <pre><code>server {
+    listen 8080;
+    server_name localhost;
+
+    location / {
+        root /data/data/com.termux/files/home/caminho-da-sua-pasta;
+        index index.html;
+    }
+}</code></pre>
+
+      <h4>3. Testar a sintaxe e iniciar o serviço</h4>
+      <p>O comando <code>nginx -t</code> valida os arquivos de configuração antes da aplicação para evitar que o servidor caia por erros de escrita:</p>
+      <pre><code># Testar sintaxe:
+nginx -t
+
+# Iniciar o servidor:
+nginx
+
+# Recarregar após alterações de configuração:
+nginx -s reload
+
+# Parar o serviço:
+nginx -s stop</code></pre>
+
+      <h3 id="verificar-portas">Como verificar os servidores e portas em execução</h3>
+      <ul>
+        <li><strong>Verificar processos ativos:</strong> <code>ps aux | grep nginx</code> ou <code>ps aux | grep python</code>.</li>
+        <li><strong>Listar portas em escuta:</strong> <code>netstat -tuln</code> ou <code>ss -tuln</code> (procure por linhas com estado <code>LISTEN</code>).</li>
+        <li><strong>Teste de resposta local via terminal:</strong> <code>curl -I http://localhost:8080</code> (deve retornar cabeçalho <code>HTTP/1.1 200 OK</code> com <code>Server: nginx</code>).</li>
+      </ul>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 3: Compilação e envio do Jekyll -->
+    <section id="fluxo-jekyll" class="wiki-section">
+      <h2>3. Compilação e envio do Jekyll</h2>
+      <p>O Jekyll é um gerador de sites estáticos que transforma arquivos em Markdown, layouts em Liquid e folhas de estilo Sass em páginas HTML prontas para publicação.</p>
+
+      <h3 id="bundler-install">O que é o Bundler e o comando bundle install</h3>
+      <p>O Bundler é o gerenciador de dependências do ecossistema Ruby. Em vez de instalar gems manualmente uma a uma, o projeto define suas dependências em um arquivo chamado <code>Gemfile</code>.</p>
+      <ul>
+        <li><strong>Instalar as dependências do projeto:</strong> execute na raiz da pasta do seu site:
+          <pre><code>bundle install</code></pre>
+          <p>Esse comando lê o arquivo <code>Gemfile</code>, baixa as versões corretas de todas as gems necessárias (como <code>jekyll</code>, temas e plugins) e grava o arquivo <code>Gemfile.lock</code>.</p>
+        </li>
+      </ul>
+
+      <h3 id="bundle-exec">Para que serve o prefixo bundle exec</h3>
+      <p>Executar um comando diretamente como <code>jekyll build</code> pode causar conflitos se houver múltiplas versões do Jekyll ou de plugins instaladas no sistema. Ao usar <code>bundle exec</code>, você garante que o comando seja executado estritamente no contexto das versões declaradas no <code>Gemfile.lock</code> do projeto:</p>
+      <pre><code># Testar e visualizar localmente no computador com servidor de desenvolvimento:
+bundle exec jekyll serve
+
+# Compilar o site para publicação:
+bundle exec jekyll build</code></pre>
+
+      <h3 id="compilacao-site">Como funciona a compilação do site</h3>
+      <p>Ao rodar <code>bundle exec jekyll build</code> no computador:</p>
+      <ol>
+        <li>O Jekyll processa todos os arquivos Markdown, converte o código Sass em CSS puro e aplica os templates HTML.</li>
+        <li>O resultado final é salvo na pasta <strong><code>_site/</code></strong>, que contém apenas arquivos estáticos (HTML, CSS, imagens e JavaScript).</li>
+        <li>Essa pasta <code>_site</code> é a única que precisa ser transferida para o servidor no celular.</li>
+      </ol>
+
+      <h3 id="fluxo-transferencia">Fluxo completo de compilação e transferência para o servidor</h3>
+      <p>Passo a passo recomendado no terminal do computador:</p>
+      <ol>
+        <li>Entre na pasta do projeto no computador:
+          <pre><code>cd ~/meu-site</code></pre>
+        </li>
+        <li>Gere a versão estática atualizada:
+          <pre><code>bundle exec jekyll build</code></pre>
+        </li>
+        <li>Transfira os arquivos gerados para o Termux via Rsync (inclua a barra <code>/</code> ao final da pasta de origem para enviar o conteúdo sem duplicar o nome do diretório):
+          <pre><code>rsync -avz -e 'ssh -p 8022' _site/ u0_a229@IP_DO_CELULAR:~/gustavoribeiro-net/_site</code></pre>
+        </li>
+      </ol>
+
+      <h3 id="linkagem-jekyll">Linkagem interna no Jekyll</h3>
+      <ul>
+        <li><strong>Uso da tag <code>link</code> (recomendado):</strong> verifica se o arquivo realmente existe durante a compilação do site. Caso o arquivo seja renomeado ou movido, o Jekyll emite um erro, impedindo links quebrados.
+          <pre><code>[Texto do link]({% link pagina.md %})
+[Texto do post]({% link _posts/2026-08-10-meu-post.md %})</code></pre>
+        </li>
+        <li><strong>Uso do filtro <code>relative_url</code>:</strong> constrói a URL final com base no caminho relativo do site:
+          <pre><code>[Texto do link]({{ '/minha-pagina/' | relative_url }})</code></pre>
+        </li>
+      </ul>
+
+      <h3 id="jekyll-32bits">Compatibilidade de Jekyll em arquiteturas 32 bits</h3>
+      <p>Em sistemas antigos de 32 bits, o pacote <code>sass-embedded</code> (Dart Sass) falha por não possuir binários para 32 bits. A solução é fixar a versão 2.x do conversor no <code>Gemfile</code>:</p>
+      <pre><code># No Gemfile:
+gem "jekyll-sass-converter", "~> 2.0"</code></pre>
+      <p>Em seguida, atualize o pacote com o Bundler: <code>bundle update jekyll-sass-converter &amp;&amp; bundle install</code>.</p>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 4: Otimização de imagens e scripts Python -->
+    <section id="otimizacao-imagens" class="wiki-section">
+      <h2>4. Imagens e scripts Python</h2>
+      <p>Boas práticas e correções para conversão de mídia e execução de scripts de automação em ambientes legados.</p>
+
+      <h3 id="conversao-imagemagick">Conversão com ImageMagick e correção de rotação EXIF</h3>
+      <p>Fotos tiradas em smartphones podem ser salvas com orientação rotacionada nos metadados. O parâmetro <code>-auto-orient</code> lê os dados EXIF, gira a imagem fisicamente e remove a marcação para gerar arquivos WebP perfeitamente alinhados:</p>
+      <pre><code># Instalação:
+sudo apt install imagemagick webp
+
+# Comando direto de conversão com qualidade e orientação corrigidas:
+convert imagem.jpg -auto-orient -quality 80 -define webp:target-size=1048576 imagem.webp</code></pre>
+
+      <div class="callout" style="background-color: #f8fafc; border-left: 4px solid var(--accent-color);">
+        <strong>Atenção para versões antigas:</strong> Em distribuições antigas (como Ubuntu 18.04), use o binário <code>convert</code> no script em vez de <code>magick</code>. Certifique-se de incluir o hífen em <code>"-auto-orient"</code>.
+      </div>
+
+      <h3 id="compatibilidade-python">Compatibilidade de scripts no Python 3.6 (subprocess.run)</h3>
+      <p>O argumento <code>capture_output=True</code> só existe a partir do Python 3.7. Para scripts rodando no Python 3.6, substitua a chamada:</p>
+      <pre><code># Em vez de: subprocess.run(cmd, capture_output=True, text=True)
+# Utilize a sintaxe compatível com Python 3.6:
+result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)</code></pre>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 5: Página 404 personalizada -->
+    <section id="pagina-404" class="wiki-section">
+      <h2>5. Página 404 personalizada no Nginx</h2>
+      <p>Permite exibir uma página visual personalizada sempre que um visitante tentar acessar uma rota inexistente no servidor.</p>
+
+      <h3 id="config-404">Configuração no nginx.conf</h3>
+      <p>Dentro do bloco <code>server { ... }</code>, configure a diretiva <code>error_page</code> e a regra de correspondência exata com o parâmetro <code>internal</code> para restringir o acesso direto:</p>
+      <pre><code>server {
+    listen 8080;
+    server_name localhost;
+
+    error_page 404 /404.html;
+
+    location / {
+        root /data/data/com.termux/files/home/gustavoribeiro-net/_site;
+        index index.html;
+    }
+
+    location = /404.html {
+        root /data/data/com.termux/files/home/gustavoribeiro-net/_site;
+        internal;
+    }
+}</code></pre>
+
+      <h3 id="testar-404">Como testar se a página 404 está funcionando</h3>
+      <ul>
+        <li><strong>Pelo navegador:</strong> acesse uma página que não existe (ex: <code>http://seusite.com/pagina-inexistente-123</code>).</li>
+        <li><strong>Pelo terminal (conferir o código HTTP 404):</strong>
+          <pre><code>curl -I http://localhost:8080/pagina-inexistente</code></pre>
+        </li>
+        <li><strong>Pelo terminal (conferir o conteúdo HTML entregue):</strong>
+          <pre><code>curl -s http://localhost:8080/pagina-inexistente | head -n 10</code></pre>
+        </li>
+      </ul>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 6: Cloudflare Tunnel -->
+    <section id="cloudflare-tunnel" class="wiki-section">
+      <h2>6. Publicação com Cloudflare Tunnel</h2>
+      <p>O Cloudflare Tunnel permite expor servidores locais para a internet de forma segura, sem abrir portas no roteador residencial ou depender de IP público fixo.</p>
+
+      <h3 id="instalacao-cloudflared">Instalação do cloudflared no cliente (computador)</h3>
+      <ul>
+        <li><strong>macOS (Homebrew):</strong> instale diretamente com <code>brew install cloudflared</code>.</li>
+        <li><strong>Linux (Debian/Ubuntu/APT):</strong>
+          <pre><code>curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared.deb</code></pre>
+        </li>
+        <li><strong>Windows:</strong> instale via PowerShell com <code>winget install --id Cloudflare.cloudflared</code>.</li>
+      </ul>
+
+      <h3 id="testes-rapidos-tunnel">Testes rápidos sem domínio próprio (no celular)</h3>
+      <pre><code>pkg install cloudflared
+cloudflared tunnel --url http://localhost:8080</code></pre>
+
+      <h3 id="config-dominio-proprio">Configuração com domínio próprio</h3>
+      <ol>
+        <li>Autentique no painel da Cloudflare:
+          <pre><code>cloudflared tunnel login</code></pre>
+        </li>
+        <li>Crie o túnel nomeado:
+          <pre><code>cloudflared tunnel create meu-servidor</code></pre>
+        </li>
+        <li>Crie o arquivo de regras em <code>nano ~/.cloudflared/config.yml</code>:
+          <pre><code>tunnel: SEU_ID_DO_TUNEL
+credentials-file: /data/data/com.termux/files/home/.cloudflared/SEU_ID_DO_TUNEL.json
+
+ingress:
+  - hostname: seu-dominio.com
+    service: http://localhost:8080
+  - hostname: www.seu-dominio.com
+    service: http://localhost:8080
+  - service: http_status:404</code></pre>
+        </li>
+        <li>Remova registros DNS antigos do tipo A e AAAA no painel da Cloudflare (mantendo intactos registros MX e TXT de e-mail).</li>
+        <li>Crie as rotas de DNS para o domínio:
+          <pre><code>cloudflared tunnel route dns meu-servidor seu-dominio.com
+cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
+        </li>
+        <li>Inicie o túnel:
+          <pre><code>cloudflared tunnel run meu-servidor</code></pre>
+        </li>
+      </ol>
+
+      <h3 id="gerenciamento-tunnels-cli">Gerenciamento de túneis via CLI</h3>
+      <ul>
+        <li><strong>Listar túneis existentes:</strong> <code>cloudflared tunnel list</code></li>
+        <li><strong>Deletar um túnel antigo ou quebrado:</strong> <code>cloudflared tunnel delete NOME_OU_ID --force</code></li>
+        <li><strong>Localizar Token do túnel no painel Zero Trust:</strong> acesse <strong>Networks &gt; Tunnels &gt; Configure</strong> e copie a chave longa após <code>--token</code>.</li>
+        <li><strong>Executar túnel via Token:</strong> <code>cloudflared tunnel run --token SEU_TOKEN</code></li>
+      </ul>
+
+      <h3 id="rotear-desrotear-subdominios">Rotear e desrotear subdomínios</h3>
+      <h4>Como rotear um novo subdomínio</h4>
+      <ol>
+        <li>Adicione a regra no arquivo <code>~/.cloudflared/config.yml</code> antes de <code>http_status:404</code>:
+          <pre><code>  - hostname: app.seu-dominio.com
+    service: http://localhost:8080</code></pre>
+        </li>
+        <li>Crie a rota no DNS:
+          <pre><code>cloudflared tunnel route dns meu-servidor app.seu-dominio.com</code></pre>
+        </li>
+        <li>Reinicie o túnel:
+          <pre><code>pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
+        </li>
+      </ol>
+
+      <h4>Como desrotear um subdomínio</h4>
+      <ol>
+        <li>No painel da Cloudflare em <strong>DNS &gt; Records</strong>, delete o registro CNAME apontado para o túnel.</li>
+        <li>Abra o arquivo <code>~/.cloudflared/config.yml</code> e apague as linhas do subdomínio.</li>
+        <li>Reinicie o túnel:
+          <pre><code>pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
+        </li>
+      </ol>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 7: Segurança e WAF -->
+    <section id="seguranca-waf" class="wiki-section">
+      <h2>7. Segurança, WAF e bloqueio de robôs</h2>
+      <p>Servidores conectados à internet recebem constantes varreduras automáticas de robôs procurando falhas conhecidas, como diretórios de WordPress ou arquivos PHP desatualizados. Em um site estático, essas requisições recebem código 404 (arquivo não encontrado) e não comprometem o sistema.</p>
+
+      <h3 id="bloqueio-cloudflare">Bloqueio na Cloudflare (recomendado para economizar recursos)</h3>
+      <ul>
+        <li><strong>Bot Fight Mode:</strong> no painel da Cloudflare, acesse <strong>Segurança &gt; Bots</strong> e ative a proteção automática para barrar robôs conhecidos.</li>
+        <li><strong>Regras de WAF personalizadas:</strong> em <strong>Segurança &gt; WAF</strong>, crie uma regra com ação <strong>Bloquear</strong> caso a URI contenha <code>/wp-</code> ou termine com <code>.php</code>.</li>
+        <li><strong>Restrição geográfica:</strong> configure o WAF para bloquear ou emitir desafio interativo (Managed Challenge) para países fora do Brasil.</li>
+        <li><strong>Cloudflare Access (Zero Trust):</strong> adicione uma camada de autenticação por e-mail (PIN) antes de liberar a abertura de páginas administrativas ou confidenciais.</li>
+      </ul>
+
+      <h3 id="bloqueio-exploits-nginx">Bloqueio de invasões e SQL injection no Nginx</h3>
+      <ol>
+        <li>Baixe o conjunto de regras de bloqueio de exploits:
+          <pre><code>curl -o $PREFIX/etc/nginx/block-exploits.conf https://raw.githubusercontent.com/NginxProxyManager/nginx-proxy-manager/refs/heads/develop/docker/rootfs/etc/nginx/conf.d/include/block-exploits.conf</code></pre>
+        </li>
+        <li>Inclua o arquivo dentro do bloco <code>server</code> no <code>$PREFIX/etc/nginx/nginx.conf</code>:
+          <pre><code>server {
+    listen 8080;
+    server_name localhost;
+
+    include block-exploits.conf;
+
+    location / {
+        root /data/data/com.termux/files/home/caminho-da-pasta;
+        index index.html;
+    }
+}</code></pre>
+        </li>
+        <li>Valide e recarregue o servidor:
+          <pre><code>nginx -t &amp;&amp; nginx -s reload</code></pre>
+        </li>
+      </ol>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 8: Tmux e persistência -->
+    <section id="execucao-continua" class="wiki-section">
+      <h2>8. Sessões e persistência com Tmux</h2>
+      <p>Para manter o Nginx, o túnel e eventuais scripts rodando após desconectar do SSH ou fechar o aplicativo:</p>
+
+      <h3 id="evitar-suspensao-android">Evitar a suspensão pelo Android</h3>
+      <ul>
+        <li>Execute o comando de trava de processador:
+          <pre><code>termux-wake-lock</code></pre>
+        </li>
+        <li>Nas configurações do celular, vá em <strong>Aplicativos &gt; Termux &gt; Bateria</strong> e defina como <strong>Sem restrições</strong>.</li>
+      </ul>
+
+      <h3 id="gerenciamento-tmux">Gerenciamento de sessões com Tmux</h3>
+      <ul>
+        <li><strong>Criar sessão nomeada:</strong> <code>tmux new -s site</code></li>
+        <li><strong>Listar todas as sessões:</strong> <code>tmux ls</code></li>
+        <li><strong>Reconectar a uma sessão:</strong> <code>tmux attach -t site</code></li>
+        <li><strong>Desconectar mantendo processos vivos:</strong> pressione <code>Ctrl + B</code> e depois <code>D</code>.</li>
+        <li><strong>Encerrar uma sessão nomeada:</strong> <code>tmux kill-session -t site</code></li>
+        <li><strong>Encerrar todas as sessões de uma vez:</strong> <code>tmux kill-server</code></li>
+      </ul>
+
+      <h3 id="janelas-tmux">Múltiplas janelas dentro da mesma sessão</h3>
+      <ul>
+        <li><strong>Criar nova janela:</strong> pressione <code>Ctrl + B</code> e depois <code>C</code>.</li>
+        <li><strong>Alternar entre janelas:</strong> pressione <code>Ctrl + B</code> e depois <code>N</code> (ou o número da janela).</li>
+        <li><strong>Dividir tela horizontalmente:</strong> pressione <code>Ctrl + B</code> e depois <code>"</code>.</li>
+      </ul>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 9: SSH remoto -->
+    <section id="ssh-remoto" class="wiki-section">
+      <h2>9. SSH remoto via Cloudflare</h2>
+      <p>Permite acessar o terminal do celular com segurança a partir de qualquer rede externa através de um subdomínio.</p>
+
+      <h3 id="ssh-config-servidor">Configuração no servidor (Termux)</h3>
+      <p>Adicione o serviço SSH no arquivo <code>~/.cloudflared/config.yml</code>:</p>
+      <pre><code>ingress:
+  - hostname: seu-dominio.com
+    service: http://localhost:8080
+  - hostname: ssh.seu-dominio.com
+    service: ssh://localhost:8022
+  - service: http_status:404</code></pre>
+      <p>Crie a rota e reinicie o túnel:</p>
+      <pre><code>cloudflared tunnel route dns meu-servidor ssh.seu-dominio.com
+pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
+
+      <h3 id="ssh-linux-macos">Conectar a partir de Linux ou macOS</h3>
+      <p>Adicione ao arquivo <code>~/.ssh/config</code> do computador:</p>
+      <pre><code>Host ssh.seu-dominio.com
+  ProxyCommand cloudflared access ssh --hostname %h</code></pre>
+      <p>Conecte com <code>ssh u0_a229@ssh.seu-dominio.com</code> (ou o usuário indicado por <code>whoami</code> no Termux).</p>
+
+      <h3 id="ssh-windows">Conectar a partir do Windows</h3>
+      <ol>
+        <li>Instale o utilitário pelo PowerShell: <code>winget install --id Cloudflare.cloudflared</code></li>
+        <li>Ajuste as permissões de segurança do arquivo de configuração:
+          <pre><code>icacls "$env:USERPROFILE\.ssh\config" /inheritance:r /grant:r "$($env:USERNAME):F"</code></pre>
+        </li>
+        <li>No arquivo <code>C:\Users\SEU_USUARIO\.ssh\config</code>, use barras normais (<code>/</code>) para o executável:
+          <pre><code>Host ssh.seu-dominio.com
+  ProxyCommand "C:/cloudflared/cloudflared.exe" access ssh --hostname %h
+# Se estiver nas variáveis de ambiente:
+# ProxyCommand cloudflared.exe access ssh --hostname %h</code></pre>
+        </li>
+        <li>Caso o Cloudflare Access esteja ativo, autentique antes pelo terminal:
+          <pre><code>cloudflared.exe access login https://ssh.seu-dominio.com</code></pre>
+        </li>
+        <li>Conecte via terminal: <code>ssh u0_a229@ssh.seu-dominio.com</code></li>
+      </ol>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 10: Arquivos e Git -->
+    <section id="gestao-arquivos-git" class="wiki-section">
+      <h2>10. Arquivos e Git (SCP, Rsync e fluxo Git)</h2>
+      <p>Procedimentos para sincronização de arquivos compilados, comportamento de barras na transferência e controle de versão completo com Git e GitHub.</p>
+
+      <h3 id="transferencia-rsync">Transferência com Rsync e SCP</h3>
+      <p>O Rsync compara os arquivos locais e remotos, transferindo apenas o que foi alterado para economizar largura de banda e tempo:</p>
+      <ul>
+        <li><strong>Enviar do computador para o Termux:</strong>
+          <pre><code>rsync -avz -e 'ssh -p 8022' ~/meu-site/_site/ u0_a229@IP_DO_CELULAR:~/gustavoribeiro-net/_site</code></pre>
+        </li>
+        <li><strong>Puxar do Termux para o computador:</strong>
+          <pre><code>rsync -avz -e 'ssh -p 8022' u0_a229@IP_DO_CELULAR:~/gustavoribeiro-net/_site/ ~/Downloads/site-backup</code></pre>
+        </li>
+        <li><strong>Ignorar arquivos já existentes sem atualizar:</strong> adicione o parâmetro <code>--ignore-existing</code>.</li>
+      </ul>
+
+      <h3 id="barra-rsync-scp">Uso da barra no Rsync e SCP</h3>
+      <p>O uso da barra (<code>/</code>) no final do caminho afeta diretamente a forma como diretórios e arquivos são criados no destino.</p>
+
+      <h4>1. Comportamento da barra no caminho de origem</h4>
+      <ul>
+        <li><strong>No Rsync:</strong>
+          <ul>
+            <li><strong>Sem barra (<code>pasta</code>):</strong> copia a pasta inteira (cria o diretório <code>pasta</code> dentro do destino).</li>
+            <li><strong>Com barra (<code>pasta/</code>):</strong> copia apenas o conteúdo interno direto para o destino, sem recriar a pasta principal. Regra prática: a barra significa <em>"entrar na pasta e transferir o que está dentro"</em>.</li>
+          </ul>
+        </li>
+        <li><strong>No SCP:</strong>
+          <ul>
+            <li>O comando <code>scp -r</code> sempre copia a pasta inteira, independentemente de colocar ou não a barra no final. Ambos os formatos geram o mesmo resultado.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h4>2. Transferência sem o parâmetro recursivo (-r ou -a)</h4>
+      <ul>
+        <li><strong>No SCP:</strong> cancela a operação imediatamente com mensagem de erro informando que o item é um diretório.</li>
+        <li><strong>No Rsync:</strong> ignora o diretório silenciosamente ou exibe o aviso <code>skipping directory</code>. É necessário usar <code>-r</code> ou <code>-a</code> (que já inclui a recursividade automaticamente).</li>
+      </ul>
+
+      <h4>3. Enviar apenas o conteúdo interno usando o SCP</h4>
+      <p>Para transferir somente os arquivos internos sem recriar a pasta raiz com o SCP, use o caractere coringa <code>/*</code> na origem:</p>
+      <pre><code># Apenas arquivos da raiz da pasta:
+scp pasta/* usuario@servidor:/caminho/destino/
+
+# Se houver subpastas internas (mantém a estrutura interna sem recriar a pasta principal):
+scp -r pasta/* usuario@servidor:/caminho/destino/</code></pre>
+      <div class="callout" style="background-color: #f8fafc; border-left: 4px solid var(--accent-color);">
+        <strong>Atenção a arquivos ocultos:</strong> O coringa <code>*</code> ignora arquivos ocultos (que começam com <code>.</code>). Para transferir arquivos ocultos sem duplicar o diretório raiz, o uso do Rsync com barra (<code>rsync -avz pasta/ destino/</code>) é o método mais seguro.
+      </div>
+
+      <h4>4. A barra na pasta de destino</h4>
+      <ul>
+        <li><strong>Se o diretório de destino já existe:</strong> tanto faz usar <code>destino</code> ou <code>destino/</code>; ambos recebem os arquivos corretamente.</li>
+        <li><strong>Se o diretório de destino não existe (ao copiar arquivo único):</strong>
+          <ul>
+            <li><strong>Com barra (<code>destino/</code>):</strong> o sistema reconhece explicitamente que o caminho é uma pasta e evita erros.</li>
+            <li><strong>Sem barra (<code>destino</code>):</strong> o comando cria um arquivo chamado <code>destino</code>, renomeando o arquivo enviado por engano em vez de guardá-lo em uma pasta.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3 id="autenticacao-github">Autenticação no GitHub</h3>
+      <p>O GitHub exige chaves SSH ou tokens de acesso pessoal no terminal em substituição a senhas convencionais.</p>
+
+      <h4>Opção A: Chave SSH Ed25519 (recomendada)</h4>
+      <ol>
+        <li>Gere a chave: <code>ssh-keygen -t ed25519 -C "seu-email@dominio.com"</code></li>
+        <li>Copie a chave pública: <code>cat ~/.ssh/id_ed25519.pub</code></li>
+        <li>No GitHub, vá em <strong>Settings &gt; SSH and GPG keys &gt; New SSH Key</strong> e cole o conteúdo.</li>
+        <li>Altere a URL do repositório local para SSH:
+          <pre><code>git remote set-url origin git@github.com:gustavoribeirorg/gustavoribeiro.net.git</code></pre>
+        </li>
+      </ol>
+
+      <h4>Opção B: Personal Access Token (PAT)</h4>
+      <ol>
+        <li>No GitHub, acesse <strong>Settings &gt; Developer settings &gt; Personal access tokens &gt; Tokens (classic)</strong>.</li>
+        <li>Gere um token com o escopo <code>repo</code> marcado e copie o código.</li>
+        <li>Salve a credencial no terminal para não digitar sempre:
+          <pre><code>git config --global credential.helper store</code></pre>
+        </li>
+      </ol>
+
+      <h3 id="git-inicializacao-remoto">Inicialização e repositório remoto</h3>
+      <ul>
+        <li><strong>Iniciar repositório local:</strong>
+          <pre><code>git init</code></pre>
+        </li>
+        <li><strong>Clonar repositório existente:</strong>
+          <pre><code>git clone https://github.com/gustavoribeirorg/gustavoribeiro.net.git</code></pre>
+        </li>
+        <li><strong>Adicionar repositório remoto:</strong>
+          <pre><code>git remote add origin https://github.com/gustavoribeirorg/gustavoribeiro.net.git</code></pre>
+        </li>
+      </ul>
+
+      <h3 id="git-fluxo-trabalho">Fluxo de trabalho diário e commits</h3>
+      <ul>
+        <li><strong>Verificar status e arquivos modificados:</strong>
+          <pre><code>git status</code></pre>
+        </li>
+        <li><strong>Adicionar todos os arquivos modificados e novos ao staging:</strong>
+          <pre><code>git add .</code></pre>
+        </li>
+        <li><strong>Ver diferenças exatas antes de confirmar o commit:</strong>
+          <pre><code>git diff --staged</code></pre>
+        </li>
+        <li><strong>Confirmar alterações com mensagem direta:</strong>
+          <pre><code>git commit -am "sua mensagem de commit aqui"</code></pre>
+        </li>
+        <li><strong>Puxar alterações do repositório remoto:</strong>
+          <pre><code>git pull origin main</code></pre>
+        </li>
+        <li><strong>Enviar alterações pela primeira vez (definindo upstream):</strong>
+          <pre><code>git push -u origin main</code></pre>
+        </li>
+        <li><strong>Enviar alterações nos próximos envios:</strong>
+          <pre><code>git push origin main</code></pre>
+        </li>
+        <li><strong>Consultar histórico de commits:</strong>
+          <pre><code>git log</code></pre>
+        </li>
+      </ul>
+
+      <h3 id="git-branches-merge">Gerenciamento de branches e merge</h3>
+      <ul>
+        <li><strong>Listar branches locais:</strong>
+          <pre><code>git branch</code></pre>
+        </li>
+        <li><strong>Trocar para outro branch:</strong>
+          <pre><code>git checkout main</code></pre>
+        </li>
+        <li><strong>Mesclar alterações de outro branch no atual:</strong>
+          <pre><code>git merge master</code></pre>
+        </li>
+        <li><strong>Excluir branch local:</strong>
+          <pre><code>git branch -d master</code></pre>
+        </li>
+        <li><strong>Excluir branch no repositório remoto:</strong>
+          <pre><code>git push origin --delete master</code></pre>
+        </li>
+      </ul>
+
+      <h3 id="git-cache-gitignore">Limpeza de cache, remoção e .gitignore</h3>
+      <p>Gerenciamento de arquivos ignorados e correção do índice de rastreamento do Git.</p>
+
+      <h4>1. Criar o arquivo .gitignore</h4>
+      <pre><code>touch .gitignore</code></pre>
+
+      <h4>2. Desvincular pasta específica do Git mantendo os arquivos locais</h4>
+      <pre><code>git rm -r --cached nome-da-pasta/</code></pre>
+
+      <h4>3. Registrar modificações, criações e deleções com git add -A</h4>
+      <p>O comando <code>git add -A</code> (ou <code>git add -u</code> para itens já rastreados) registra no índice tudo o que foi alterado, criado e também o que foi apagado do disco:</p>
+      <pre><code>git add -A
+git commit -m "remove: deletando pastas antigas"
+git push</code></pre>
+
+      <h4>4. Reconstruir todo o rastreamento do zero</h4>
+      <p>Limpa a memória do índice do Git e a remonta a partir do zero com base apenas no que realmente existe na pasta no momento:</p>
+      <pre><code>git rm -r --cached .
+git add .
+git commit -m "chore: limpar cache do git e remover arquivos inexistentes"
+git push</code></pre>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 11: Logs e GoAccess -->
+    <section id="logs-goaccess" class="wiki-section">
+      <h2>11. Logs, GoAccess e IP real</h2>
+      <p>Por padrão, conexões repassadas pela Cloudflare chegam com o endereço do proxy (ou <code>127.0.0.1</code> pelo túnel). Para que o Nginx registre o IP real dos visitantes nas variáveis <code>$remote_addr</code> e nos arquivos de log, utiliza-se o módulo <code>ngx_http_realip_module</code>.</p>
+
+      <h3 id="capturar-ip-real">1. Capturar o IP real no Nginx</h3>
+      <p>Configuração completa baseada na lista oficial de faixas de IP da Cloudflare e loopback local:</p>
+
+      <h4>A. Verificar o suporte ao módulo Real IP</h4>
+      <p>Confirme se a compilação do Nginx inclui o módulo necessário:</p>
+      <pre><code>nginx -V 2>&1 | tr ' ' '\n' | grep realip
+# Deve exibir: --with-http_realip_module</code></pre>
+
+      <h4>B. Criar o arquivo cloudflare.conf</h4>
+      <p>Crie o arquivo com as faixas IPv4, IPv6 e loopback local em <code>nano $PREFIX/etc/nginx/cloudflare.conf</code>:</p>
+      <pre><code># Faixas locais e túnel
+set_real_ip_from 127.0.0.1;
+set_real_ip_from ::1;
+
+# Faixas IPv4 da Cloudflare
+set_real_ip_from 173.245.48.0/20;
+set_real_ip_from 103.21.244.0/22;
+set_real_ip_from 103.22.200.0/22;
+set_real_ip_from 103.31.4.0/22;
+set_real_ip_from 141.101.64.0/18;
+set_real_ip_from 108.162.192.0/18;
+set_real_ip_from 190.93.240.0/20;
+set_real_ip_from 188.114.96.0/20;
+set_real_ip_from 197.234.240.0/22;
+set_real_ip_from 198.41.128.0/17;
+set_real_ip_from 162.158.0.0/15;
+set_real_ip_from 104.16.0.0/13;
+set_real_ip_from 104.24.0.0/14;
+set_real_ip_from 172.64.0.0/13;
+set_real_ip_from 131.0.72.0/22;
+
+# Faixas IPv6 da Cloudflare
+set_real_ip_from 2400:cb00::/32;
+set_real_ip_from 2606:4700::/32;
+set_real_ip_from 2803:f800::/32;
+set_real_ip_from 2405:b500::/32;
+set_real_ip_from 2405:8100::/32;
+set_real_ip_from 2a06:98c0::/29;
+set_real_ip_from 2c0f:f248::/32;
+
+# Cabeçalho enviado pela Cloudflare
+real_ip_header CF-Connecting-IP;</code></pre>
+
+      <h4>C. Incluir no nginx.conf e recarregar</h4>
+      <p>Abra o <code>$PREFIX/etc/nginx/nginx.conf</code> e adicione a diretiva dentro do bloco <code>http { ... }</code>:</p>
+      <pre><code>http {
+    include cloudflare.conf;
+    # ... restante da configuração
+}</code></pre>
+      <p>Valide e aplique as alterações: <code>nginx -t &amp;&amp; nginx -s reload</code>.</p>
+
+      <h3 id="monitoramento-logs-terminal">2. Monitoramento de logs pelo terminal</h3>
+      <ul>
+        <li><strong>Acompanhar acessos em tempo real:</strong> <code>tail -f $PREFIX/var/log/nginx/access.log</code></li>
+        <li><strong>Ver últimas 30 linhas e continuar ao vivo:</strong> <code>tail -n 30 -f $PREFIX/var/log/nginx/access.log</code></li>
+        <li><strong>Exibir todo o histórico:</strong> <code>cat $PREFIX/var/log/nginx/access.log</code></li>
+        <li><strong>Acompanhar erros e bloqueios:</strong> <code>tail -f $PREFIX/var/log/nginx/error.log</code></li>
+      </ul>
+
+      <h3 id="exibir-logs-navegador">3. Exibir logs no navegador</h3>
+      <h4>Opção A: Rota de texto puro no Nginx</h4>
+      <p>Adicione dentro do bloco <code>server { ... }</code> com sinal de correspondência exata (<code>=</code>) para evitar erros 404:</p>
+      <pre><code>location = /meus-logs {
+    alias /data/data/com.termux/files/usr/var/log/nginx/access.log;
+    default_type text/plain;
+}</code></pre>
+      <p>Acesse em <code>http://seusite.com/meus-logs</code> (sem barra no final).</p>
+
+      <h4>Opção B: Link simbólico na pasta do site</h4>
+      <pre><code>ln -s $PREFIX/var/log/nginx/access.log ~/caminho-da-sua-pasta/logs.txt</code></pre>
+      <p>Acesse direto por <code>http://seusite.com/logs.txt</code>.</p>
+
+      <h3 id="painel-goaccess">4. Painel visual interativo com GoAccess</h3>
+      <h4>Modo sob demanda (estático - recomendado para economizar bateria)</h4>
+      <pre><code>pkg install goaccess -y
+goaccess $PREFIX/var/log/nginx/access.log -o ~/caminho-da-sua-pasta/relatorio.html --log-format=COMBINED</code></pre>
+
+      <h4>Modo em tempo real com WebSocket</h4>
+      <p>No <code>nginx.conf</code>, configure o proxy WebSocket:</p>
+      <pre><code>location /ws {
+    proxy_pass http://127.0.0.1:7890;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+}</code></pre>
+      <p>Execute o GoAccess em uma sessão do Tmux:</p>
+      <pre><code>goaccess $PREFIX/var/log/nginx/access.log -o ~/caminho-da-sua-pasta/relatorio.html --log-format=COMBINED --real-time-html --ws-url=wss://seusite.com/ws --port=7890</code></pre>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 12: Resolução de problemas -->
+    <section id="solucao-problemas" class="wiki-section">
+      <h2>12. Resolução de problemas</h2>
+      <p>Tabela de referência para diagnóstico e resolução de erros comuns:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Mensagem ou sintoma</th>
+            <th>Causa provável</th>
+            <th>Ação corretiva</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>Connection refused (porta 8022)</code></td>
+            <td>Serviço SSH inativo ou endereço IP alterado no celular.</td>
+            <td>Execute <code>sshd</code> no Termux e confirme o IP com <code>ifconfig</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Error 1033 (Cloudflare)</code></td>
+            <td>O processo <code>cloudflared</code> está desligado ou perdeu a conexão com os servidores da Cloudflare.</td>
+            <td>Verifique com <code>pgrep cloudflared</code> e reinicie o túnel via Tmux com <code>cloudflared tunnel run meu-site</code> ou via <code>--token</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Unable to reach the origin service (dial tcp 127.0.0.1:8080)</code></td>
+            <td>O túnel está ativo, mas o Nginx ou servidor Python não está rodando na porta indicada.</td>
+            <td>Inicie o servidor web e confirme com <code>netstat -tuln</code> ou <code>curl -I http://localhost:8080</code>.</td>
+          </tr>
+          <tr>
+            <td><code>An A, AAAA, or CNAME record with that host already exists</code></td>
+            <td>Conflito com registros de hospedagens anteriores (ex: GitHub Pages).</td>
+            <td>Remova os registros A e AAAA antigos do domínio no painel da Cloudflare e repita o comando de rota.</td>
+          </tr>
+          <tr>
+            <td><code>Página 404 padrão do Nginx exibida em vez da personalizada</code></td>
+            <td>Falta da diretiva <code>root</code> dentro de <code>location = /404.html</code>, arquivo inexistente ou falha na recarga do Nginx.</td>
+            <td>Declare <code>root</code> explicitamente dentro de <code>location = /404.html { internal; }</code>, confirme a existência do arquivo com <code>ls</code> e force o reinício com <code>pkill nginx &amp;&amp; nginx</code>.</td>
+          </tr>
+          <tr>
+            <td><code>TypeError: __init__() got an unexpected keyword argument 'capture_output'</code></td>
+            <td>Script Python usando recurso do Python 3.7+ em interpretador Python 3.6.</td>
+            <td>Substitua <code>capture_output=True</code> por <code>stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Falha na compilação da gem sass-embedded (Dart Sass)</code></td>
+            <td>Incompatibilidade do binário Dart Sass em processadores Linux 32-bit.</td>
+            <td>Fixe <code>gem "jekyll-sass-converter", "~> 2.0"</code> no Gemfile e rode <code>bundle update</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Imagens convertidas aparecem rotacionadas ("deitadas")</code></td>
+            <td>ImageMagick ignorou os metadados de orientação EXIF da câmera.</td>
+            <td>Adicione o parâmetro <code>"-auto-orient"</code> no comando do ImageMagick antes da qualidade.</td>
+          </tr>
+          <tr>
+            <td><code>Directory not empty (rmdir)</code></td>
+            <td>Tentativa de apagar pasta que contém arquivos.</td>
+            <td>Utilize <code>rm -rf nome_da_pasta</code> para remoção completa.</td>
+          </tr>
+          <tr>
+            <td><code>Directory does not exist / Invalid or unwritable path (GoAccess)</code></td>
+            <td>Uso de barra inicial (ex: <code>/nome-pasta</code>) apontando para a raiz do Android.</td>
+            <td>Use <code>~/nome-pasta</code> ou <code>$HOME/nome-pasta</code> para referenciar o diretório de usuário do Termux.</td>
+          </tr>
+          <tr>
+            <td><code>Unable to authenticate WebSocket (GoAccess)</code></td>
+            <td>Tentativa de abrir WebSocket sem criptografia através do túnel HTTPS.</td>
+            <td>Configure o bloco <code>location /ws</code> com <code>proxy_pass</code> no Nginx e aponte o parâmetro <code>--ws-url=wss://seusite.com/ws</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Bad permissions on .ssh/config (Windows)</code></td>
+            <td>OpenSSH rejeita arquivos com permissões abertas a outros usuários.</td>
+            <td>Execute <code>icacls "$env:USERPROFILE\.ssh\config" /inheritance:r /grant:r "$($env:USERNAME):F"</code> no PowerShell.</td>
+          </tr>
+          <tr>
+            <td><code>CreateProcessW failed error:2 (Windows)</code></td>
+            <td>Espaços no caminho ou barras invertidas no <code>ProxyCommand</code>.</td>
+            <td>Coloque o executável em <code>C:/cloudflared/cloudflared.exe</code> e declare o comando com barras normais (<code>/</code>).</td>
+          </tr>
+          <tr>
+            <td><code>websocket: bad handshake (Cloudflare)</code></td>
+            <td>Falta de autenticação no Cloudflare Access ou URL sem HTTPS.</td>
+            <td>Execute <code>cloudflared.exe access login https://seu-dominio.com</code> e valide as regras no painel Zero Trust.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+  </main>
+
+</body>
+</html>
