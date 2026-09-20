@@ -378,6 +378,8 @@
         <a href="#gestao-arquivos-git" class="nav-main">10. Arquivos e Git (SCP, Rsync e fluxo Git)</a>
         <ul class="sub-menu">
           <li><a href="#transferencia-rsync">Transferência com Rsync e SCP</a></li>
+          <li><a href="#rsync-dry-run">Simulação de transferência (dry-run)</a></li>
+          <li><a href="#ls-data-modificacao">Exibir data de modificação com ls</a></li>
           <li><a href="#barra-rsync-scp">Uso da barra no Rsync e SCP</a></li>
           <li><a href="#autenticacao-github">Autenticação no GitHub</a></li>
           <li><a href="#git-inicializacao-remoto">Inicialização e repositório remoto</a></li>
@@ -415,35 +417,35 @@
   <main class="content">
     <header class="wiki-header" id="topo">
       <h1>Guia técnico de servidor, Termux, Jekyll e Cloudflare Tunnel</h1>
-      <p>Manual prático para hospedagem de sites estáticos no Android, automação de túneis seguros na Cloudflare, compilação com Jekyll, gerenciamento via SSH, controle de versão com Git e sincronização com Rsync[cite: 1].</p>
+      <p>Manual prático para hospedagem de sites estáticos no Android, automação de túneis seguros na Cloudflare, compilação com Jekyll, gerenciamento via SSH, controle de versão com Git e sincronização com Rsync.</p>
     </header>
 
     <!-- Seção 1: Conexão SSH -->
     <section id="conexao-ssh" class="wiki-section">
       <h2>1. Conexão SSH no Termux</h2>
-      <p>O OpenSSH permite controlar o terminal do celular remotamente a partir de um computador na mesma rede local ou gerenciar servidores externos direto do celular[cite: 1].</p>
+      <p>O OpenSSH permite controlar o terminal do celular remotamente a partir de um computador na mesma rede local ou gerenciar servidores externos direto do celular.</p>
 
       <h3 id="descobrir-usuario">Como descobrir o nome de usuário do Termux</h3>
-      <p>No terminal do celular, execute um dos comandos abaixo para ver o identificador do seu usuário (normalmente algo como <code>u0_a229</code>)[cite: 1]:</p>
+      <p>No terminal do celular, execute um dos comandos abaixo para ver o identificador do seu usuário (normalmente algo como <code>u0_a229</code>):</p>
       <pre><code>whoami
 # ou
 id -un</code></pre>
 
       <h3 id="acesso-computador">Acessar o Termux a partir do computador</h3>
       <ol>
-        <li>No Termux, instale o pacote OpenSSH e defina uma senha de acesso[cite: 1]:
+        <li>No Termux, instale o pacote OpenSSH e defina uma senha de acesso:
           <pre><code>pkg install openssh
 passwd</code></pre>
         </li>
-        <li>Descubra o endereço IP local do celular[cite: 1]:
+        <li>Descubra o endereço IP local do celular:
           <pre><code>ifconfig
 # ou
 ip a</code></pre>
         </li>
-        <li>Inicie o serviço do servidor SSH no celular[cite: 1]:
+        <li>Inicie o serviço do servidor SSH no celular:
           <pre><code>sshd</code></pre>
         </li>
-        <li>No terminal do computador, conecte-se utilizando a porta padrão do Termux (<code>8022</code>) e o usuário identificado com <code>whoami</code>[cite: 1]:
+        <li>No terminal do computador, conecte-se utilizando a porta padrão do Termux (<code>8022</code>) e o usuário identificado com <code>whoami</code>:
           <pre><code>ssh usuario@IP_DO_CELULAR -p 8022
 # Exemplo:
 ssh u0_a229@192.168.3.33 -p 8022</code></pre>
@@ -451,13 +453,13 @@ ssh u0_a229@192.168.3.33 -p 8022</code></pre>
       </ol>
 
       <h3 id="conectar-remoto">Conectar do Termux a um servidor remoto</h3>
-      <p>Para abrir uma sessão SSH a partir do Termux em direção a outro servidor[cite: 1]:</p>
+      <p>Para abrir uma sessão SSH a partir do Termux em direção a outro servidor:</p>
       <pre><code>ssh usuario@ip_do_servidor
 # Caso utilize porta personalizada:
 ssh usuario@ip_do_servidor -p numero_da_porta</code></pre>
 
       <h3 id="finalizar-ssh">Finalizar o serviço SSH</h3>
-      <p>Para encerrar o servidor SSH no Termux quando terminar[cite: 1]:</p>
+      <p>Para encerrar o servidor SSH no Termux quando terminar:</p>
       <pre><code>pkill sshd</code></pre>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
@@ -466,25 +468,25 @@ ssh usuario@ip_do_servidor -p numero_da_porta</code></pre>
     <!-- Seção 2: Servidores Web -->
     <section id="servidores-web" class="wiki-section">
       <h2>2. Servidores web (Python e Nginx)</h2>
-      <p>Para hospedar páginas estáticas no celular, você pode utilizar o módulo HTTP nativo do Python para testes ou migrar para o Nginx para maior eficiência de memória e bateria[cite: 1].</p>
+      <p>Para hospedar páginas estáticas no celular, você pode utilizar o módulo HTTP nativo do Python para testes ou migrar para o Nginx para maior eficiência de memória e bateria.</p>
 
       <h3 id="python-http">Servidor HTTP simples em Python</h3>
-      <p>Adequado para testes rápidos de arquivos em uma pasta[cite: 1]:</p>
+      <p>Adequado para testes rápidos de arquivos em uma pasta:</p>
       <pre><code>pkg install python
 cd ~/meu-site
 python -m http.server 8080 &amp;</code></pre>
-      <p>Para manter o servidor Python rodando em segundo plano sem travar o terminal (usando <code>nohup</code>)[cite: 1]:</p>
+      <p>Para manter o servidor Python rodando em segundo plano sem travar o terminal (usando <code>nohup</code>):</p>
       <pre><code>cd ~/gustavoribeiro-net/_site &amp;&amp; nohup python3 -m http.server 8080 &gt; /dev/null 2&gt;&amp;1 &amp;</code></pre>
-      <p>Para encerrar o servidor Python executado via <code>nohup</code> ou em segundo plano: <code>pkill -f "http.server"</code>[cite: 1].</p>
+      <p>Para encerrar o servidor Python executado via <code>nohup</code> ou em segundo plano: <code>pkill -f "http.server"</code>.</p>
 
       <h3 id="migracao-nginx">Migração para o Nginx (recomendado)</h3>
-      <p>O Nginx consome significativamente menos bateria e memória RAM do que o Python, processa arquivos estáticos com mais agilidade e gerencia cabeçalhos de proxy nativamente[cite: 1].</p>
+      <p>O Nginx consome significativamente menos bateria e memória RAM do que o Python, processa arquivos estáticos com mais agilidade e gerencia cabeçalhos de proxy nativamente.</p>
 
       <h4>1. Instalar o Nginx</h4>
       <pre><code>pkg update &amp;&amp; pkg install nginx -y</code></pre>
 
       <h4>2. Configurar a pasta e a porta</h4>
-      <p>Abra a configuração principal com <code>nano $PREFIX/etc/nginx/nginx.conf</code> e ajuste o bloco <code>server</code>[cite: 1]:</p>
+      <p>Abra a configuração principal com <code>nano $PREFIX/etc/nginx/nginx.conf</code> e ajuste o bloco <code>server</code>:</p>
       <pre><code>server {
     listen 8080;
     server_name localhost;
@@ -496,7 +498,7 @@ python -m http.server 8080 &amp;</code></pre>
 }</code></pre>
 
       <h4>3. Testar a sintaxe e iniciar o serviço</h4>
-      <p>O comando <code>nginx -t</code> valida os arquivos de configuração antes da aplicação para evitar que o servidor caia por erros de escrita[cite: 1]:</p>
+      <p>O comando <code>nginx -t</code> valida os arquivos de configuração antes da aplicação para evitar que o servidor caia por erros de escrita:</p>
       <pre><code># Testar sintaxe:
 nginx -t
 
@@ -511,9 +513,9 @@ nginx -s stop</code></pre>
 
       <h3 id="verificar-portas">Como verificar os servidores e portas em execução</h3>
       <ul>
-        <li><strong>Verificar processos ativos:</strong> <code>ps aux | grep nginx</code> ou <code>ps aux | grep python</code>[cite: 1].</li>
-        <li><strong>Listar portas em escuta:</strong> <code>netstat -tuln</code> ou <code>ss -tuln</code> (procure por linhas com estado <code>LISTEN</code>)[cite: 1].</li>
-        <li><strong>Teste de resposta local via terminal:</strong> <code>curl -I http://localhost:8080</code> (deve retornar cabeçalho <code>HTTP/1.1 200 OK</code> com <code>Server: nginx</code>)[cite: 1].</li>
+        <li><strong>Verificar processos ativos:</strong> <code>ps aux | grep nginx</code> ou <code>ps aux | grep python</code>.</li>
+        <li><strong>Listar portas em escuta:</strong> <code>netstat -tuln</code> ou <code>ss -tuln</code> (procure por linhas com estado <code>LISTEN</code>).</li>
+        <li><strong>Teste de resposta local via terminal:</strong> <code>curl -I http://localhost:8080</code> (deve retornar cabeçalho <code>HTTP/1.1 200 OK</code> com <code>Server: nginx</code>).</li>
       </ul>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
@@ -522,19 +524,19 @@ nginx -s stop</code></pre>
     <!-- Seção 3: Compilação e envio do Jekyll -->
     <section id="fluxo-jekyll" class="wiki-section">
       <h2>3. Compilação e envio do Jekyll</h2>
-      <p>O Jekyll é um gerador de sites estáticos que transforma arquivos em Markdown, layouts em Liquid e folhas de estilo Sass em páginas HTML prontas para publicação[cite: 1].</p>
+      <p>O Jekyll é um gerador de sites estáticos que transforma arquivos em Markdown, layouts em Liquid e folhas de estilo Sass em páginas HTML prontas para publicação.</p>
 
       <h3 id="bundler-install">O que é o Bundler e o comando bundle install</h3>
-      <p>O Bundler é o gerenciador de dependências do ecossistema Ruby[cite: 1]. Em vez de instalar gems manualmente uma a uma, o projeto define suas dependências em um arquivo chamado <code>Gemfile</code>[cite: 1].</p>
+      <p>O Bundler é o gerenciador de dependências do ecossistema Ruby. Em vez de instalar gems manualmente uma a uma, o projeto define suas dependências em um arquivo chamado <code>Gemfile</code>.</p>
       <ul>
-        <li><strong>Instalar as dependências do projeto:</strong> execute na raiz da pasta do seu site[cite: 1]:
+        <li><strong>Instalar as dependências do projeto:</strong> execute na raiz da pasta do seu site:
           <pre><code>bundle install</code></pre>
-          <p>Esse comando lê o arquivo <code>Gemfile</code>, baixa as versões corretas de todas as gems necessárias (como <code>jekyll</code>, temas e plugins) e grava o arquivo <code>Gemfile.lock</code>[cite: 1].</p>
+          <p>Esse comando lê o arquivo <code>Gemfile</code>, baixa as versões corretas de todas as gems necessárias (como <code>jekyll</code>, temas e plugins) e grava o arquivo <code>Gemfile.lock</code>.</p>
         </li>
       </ul>
 
       <h3 id="bundle-exec">Para que serve o prefixo bundle exec</h3>
-      <p>Executar um comando diretamente como <code>jekyll build</code> pode causar conflitos se houver múltiplas versões do Jekyll ou de plugins instaladas no sistema[cite: 1]. Ao usar <code>bundle exec</code>, você garante que o comando seja executado estritamente no contexto das versões declaradas no <code>Gemfile.lock</code> do projeto[cite: 1]:</p>
+      <p>Executar um comando diretamente como <code>jekyll build</code> pode causar conflitos se houver múltiplas versões do Jekyll ou de plugins instaladas no sistema. Ao usar <code>bundle exec</code>, você garante que o comando seja executado estritamente no contexto das versões declaradas no <code>Gemfile.lock</code> do projeto:</p>
       <pre><code># Testar e visualizar localmente no computador com servidor de desenvolvimento:
 bundle exec jekyll serve
 
@@ -542,43 +544,43 @@ bundle exec jekyll serve
 bundle exec jekyll build</code></pre>
 
       <h3 id="compilacao-site">Como funciona a compilação do site</h3>
-      <p>Ao rodar <code>bundle exec jekyll build</code> no computador[cite: 1]:</p>
+      <p>Ao rodar <code>bundle exec jekyll build</code> no computador:</p>
       <ol>
-        <li>O Jekyll processa todos os arquivos Markdown, converte o código Sass em CSS puro e aplica os templates HTML[cite: 1].</li>
-        <li>O resultado final é salvo na pasta <strong><code>_site/</code></strong>, que contém apenas arquivos estáticos (HTML, CSS, imagens e JavaScript)[cite: 1].</li>
-        <li>Essa pasta <code>_site</code> é a única que precisa ser transferida para o servidor no celular[cite: 1].</li>
+        <li>O Jekyll processa todos os arquivos Markdown, converte o código Sass em CSS puro e aplica os templates HTML.</li>
+        <li>O resultado final é salvo na pasta <strong><code>_site/</code></strong>, que contém apenas arquivos estáticos (HTML, CSS, imagens e JavaScript).</li>
+        <li>Essa pasta <code>_site</code> é a única que precisa ser transferida para o servidor no celular.</li>
       </ol>
 
       <h3 id="fluxo-transferencia">Fluxo completo de compilação e transferência para o servidor</h3>
-      <p>Passo a passo recomendado no terminal do computador[cite: 1]:</p>
+      <p>Passo a passo recomendado no terminal do computador:</p>
       <ol>
-        <li>Entre na pasta do projeto no computador[cite: 1]:
+        <li>Entre na pasta do projeto no computador:
           <pre><code>cd ~/meu-site</code></pre>
         </li>
-        <li>Gere a versão estática atualizada[cite: 1]:
+        <li>Gere a versão estática atualizada:
           <pre><code>bundle exec jekyll build</code></pre>
         </li>
-        <li>Transfira os arquivos gerados para o Termux via Rsync (inclua a barra <code>/</code> ao final da pasta de origem para enviar o conteúdo sem duplicar o nome do diretório)[cite: 1]:
+        <li>Transfira os arquivos gerados para o Termux via Rsync (inclua a barra <code>/</code> ao final da pasta de origem para enviar o conteúdo sem duplicar o nome do diretório):
           <pre><code>rsync -avz -e 'ssh -p 8022' _site/ u0_a229@IP_DO_CELULAR:~/gustavoribeiro-net/_site</code></pre>
         </li>
       </ol>
 
       <h3 id="linkagem-jekyll">Linkagem interna no Jekyll</h3>
       <ul>
-        <li><strong>Uso da tag <code>link</code> (recomendado):</strong> verifica se o arquivo realmente existe durante a compilação do site[cite: 1]. Caso o arquivo seja renomeado ou movido, o Jekyll emite um erro, impedindo links quebrados[cite: 1].
+        <li><strong>Uso da tag <code>link</code> (recomendado):</strong> verifica se o arquivo realmente existe durante a compilação do site. Caso o arquivo seja renomeado ou movido, o Jekyll emite um erro, impedindo links quebrados.
           <pre><code>[Texto do link]({% link pagina.md %})
 [Texto do post]({% link _posts/2026-08-10-meu-post.md %})</code></pre>
         </li>
-        <li><strong>Uso do filtro <code>relative_url</code>:</strong> constrói a URL final com base no caminho relativo do site[cite: 1]:
+        <li><strong>Uso do filtro <code>relative_url</code>:</strong> constrói a URL final com base no caminho relativo do site:
           <pre><code>[Texto do link]({{ '/minha-pagina/' | relative_url }})</code></pre>
         </li>
       </ul>
 
       <h3 id="jekyll-32bits">Compatibilidade de Jekyll em arquiteturas 32 bits</h3>
-      <p>Em sistemas antigos de 32 bits, o pacote <code>sass-embedded</code> (Dart Sass) falha por não possuir binários para 32 bits[cite: 1]. A solução é fixar a versão 2.x do conversor no <code>Gemfile</code>[cite: 1]:</p>
+      <p>Em sistemas antigos de 32 bits, o pacote <code>sass-embedded</code> (Dart Sass) falha por não possuir binários para 32 bits. A solução é fixar a versão 2.x do conversor no <code>Gemfile</code>:</p>
       <pre><code># No Gemfile:
 gem "jekyll-sass-converter", "~> 2.0"</code></pre>
-      <p>Em seguida, atualize o pacote com o Bundler: <code>bundle update jekyll-sass-converter &amp;&amp; bundle install</code>[cite: 1].</p>
+      <p>Em seguida, atualize o pacote com o Bundler: <code>bundle update jekyll-sass-converter &amp;&amp; bundle install</code>.</p>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
@@ -586,10 +588,10 @@ gem "jekyll-sass-converter", "~> 2.0"</code></pre>
     <!-- Seção 4: Otimização de imagens e scripts Python -->
     <section id="otimizacao-imagens" class="wiki-section">
       <h2>4. Imagens e scripts Python</h2>
-      <p>Boas práticas e correções para conversão de mídia e execução de scripts de automação em ambientes legados[cite: 1].</p>
+      <p>Boas práticas e correções para conversão de mídia e execução de scripts de automação em ambientes legados.</p>
 
       <h3 id="conversao-imagemagick">Conversão com ImageMagick e correção de rotação EXIF</h3>
-      <p>Fotos tiradas em smartphones podem ser salvas com orientação rotacionada nos metadados[cite: 1]. O parâmetro <code>-auto-orient</code> lê os dados EXIF, gira a imagem fisicamente e remove a marcação para gerar arquivos WebP perfeitamente alinhados[cite: 1]:</p>
+      <p>Fotos tiradas em smartphones podem ser salvas com orientação rotacionada nos metadados. O parâmetro <code>-auto-orient</code> lê os dados EXIF, gira a imagem fisicamente e remove a marcação para gerar arquivos WebP perfeitamente alinhados:</p>
       <pre><code># Instalação:
 sudo apt install imagemagick webp
 
@@ -597,11 +599,11 @@ sudo apt install imagemagick webp
 convert imagem.jpg -auto-orient -quality 80 -define webp:target-size=1048576 imagem.webp</code></pre>
 
       <div class="callout" style="background-color: #f8fafc; border-left: 4px solid var(--accent-color);">
-        <strong>Atenção para versões antigas:</strong> Em distribuições antigas (como Ubuntu 18.04), use o binário <code>convert</code> no script em vez de <code>magick</code>[cite: 1]. Certifique-se de incluir o hífen em <code>"-auto-orient"</code>[cite: 1].
+        <strong>Atenção para versões antigas:</strong> Em distribuições antigas (como Ubuntu 18.04), use o binário <code>convert</code> no script em vez de <code>magick</code>. Certifique-se de incluir o hífen em <code>"-auto-orient"</code>.
       </div>
 
       <h3 id="compatibilidade-python">Compatibilidade de scripts no Python 3.6 (subprocess.run)</h3>
-      <p>O argumento <code>capture_output=True</code> só existe a partir do Python 3.7[cite: 1]. Para scripts rodando no Python 3.6, substitua a chamada[cite: 1]:</p>
+      <p>O argumento <code>capture_output=True</code> só existe a partir do Python 3.7. Para scripts rodando no Python 3.6, substitua a chamada:</p>
       <pre><code># Em vez de: subprocess.run(cmd, capture_output=True, text=True)
 # Utilize a sintaxe compatível com Python 3.6:
 result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)</code></pre>
@@ -612,10 +614,10 @@ result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, uni
     <!-- Seção 5: Página 404 personalizada -->
     <section id="pagina-404" class="wiki-section">
       <h2>5. Página 404 personalizada no Nginx</h2>
-      <p>Permite exibir uma página visual personalizada sempre que um visitante tentar acessar uma rota inexistente no servidor[cite: 1].</p>
+      <p>Permite exibir uma página visual personalizada sempre que um visitante tentar acessar uma rota inexistente no servidor.</p>
 
       <h3 id="config-404">Configuração no nginx.conf</h3>
-      <p>Dentro do bloco <code>server { ... }</code>, configure a diretiva <code>error_page</code> e a regra de correspondência exata com o parâmetro <code>internal</code> para restringir o acesso direto[cite: 1]:</p>
+      <p>Dentro do bloco <code>server { ... }</code>, configure a diretiva <code>error_page</code> e a regra de correspondência exata com o parâmetro <code>internal</code> para restringir o acesso direto:</p>
       <pre><code>server {
     listen 8080;
     server_name localhost;
@@ -635,11 +637,11 @@ result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, uni
 
       <h3 id="testar-404">Como testar se a página 404 está funcionando</h3>
       <ul>
-        <li><strong>Pelo navegador:</strong> acesse uma página que não existe (ex: <code>http://seusite.com/pagina-inexistente-123</code>)[cite: 1].</li>
-        <li><strong>Pelo terminal (conferir o código HTTP 404):</strong>[cite: 1]
+        <li><strong>Pelo navegador:</strong> acesse uma página que não existe (ex: <code>http://seusite.com/pagina-inexistente-123</code>).</li>
+        <li><strong>Pelo terminal (conferir o código HTTP 404):</strong>
           <pre><code>curl -I http://localhost:8080/pagina-inexistente</code></pre>
         </li>
-        <li><strong>Pelo terminal (conferir o conteúdo HTML entregue):</strong>[cite: 1]
+        <li><strong>Pelo terminal (conferir o conteúdo HTML entregue):</strong>
           <pre><code>curl -s http://localhost:8080/pagina-inexistente | head -n 10</code></pre>
         </li>
       </ul>
@@ -650,16 +652,16 @@ result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, uni
     <!-- Seção 6: Cloudflare Tunnel -->
     <section id="cloudflare-tunnel" class="wiki-section">
       <h2>6. Publicação com Cloudflare Tunnel</h2>
-      <p>O Cloudflare Tunnel permite expor servidores locais para a internet de forma segura, sem abrir portas no roteador residencial ou depender de IP público fixo[cite: 1].</p>
+      <p>O Cloudflare Tunnel permite expor servidores locais para a internet de forma segura, sem abrir portas no roteador residencial ou depender de IP público fixo.</p>
 
       <h3 id="instalacao-cloudflared">Instalação do cloudflared no cliente (computador)</h3>
       <ul>
-        <li><strong>macOS (Homebrew):</strong> instale diretamente com <code>brew install cloudflared</code>[cite: 1].</li>
+        <li><strong>macOS (Homebrew):</strong> instale diretamente com <code>brew install cloudflared</code>.</li>
         <li><strong>Linux 64 bits (Debian/Ubuntu/APT):</strong>
           <pre><code>curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
 sudo dpkg -i cloudflared.deb</code></pre>
         </li>
-        <li><strong>Windows:</strong> instale via PowerShell com <code>winget install --id Cloudflare.cloudflared</code>[cite: 1].</li>
+        <li><strong>Windows:</strong> instale via PowerShell com <code>winget install --id Cloudflare.cloudflared</code>.</li>
       </ul>
 
       <h3 id="instalacao-32bits">Instalação em Linux 32 bits (incompatibilidade i386 vs 386)</h3>
@@ -683,13 +685,13 @@ cloudflared tunnel --url http://localhost:8080</code></pre>
 
       <h3 id="config-dominio-proprio">Configuração com domínio próprio</h3>
       <ol>
-        <li>Autentique no painel da Cloudflare[cite: 1]:
+        <li>Autentique no painel da Cloudflare:
           <pre><code>cloudflared tunnel login</code></pre>
         </li>
-        <li>Crie o túnel nomeado[cite: 1]:
+        <li>Crie o túnel nomeado:
           <pre><code>cloudflared tunnel create meu-servidor</code></pre>
         </li>
-        <li>Crie o arquivo de regras em <code>nano ~/.cloudflared/config.yml</code>[cite: 1]:
+        <li>Crie o arquivo de regras em <code>nano ~/.cloudflared/config.yml</code>:
           <pre><code>tunnel: SEU_ID_DO_TUNEL
 credentials-file: /data/data/com.termux/files/home/.cloudflared/SEU_ID_DO_TUNEL.json
 
@@ -700,35 +702,35 @@ ingress:
     service: http://localhost:8080
   - service: http_status:404</code></pre>
         </li>
-        <li>Remova registros DNS antigos do tipo A e AAAA no painel da Cloudflare (mantendo intactos registros MX e TXT de e-mail)[cite: 1].</li>
-        <li>Crie as rotas de DNS para o domínio[cite: 1]:
+        <li>Remova registros DNS antigos do tipo A e AAAA no painel da Cloudflare (mantendo intactos registros MX e TXT de e-mail).</li>
+        <li>Crie as rotas de DNS para o domínio:
           <pre><code>cloudflared tunnel route dns meu-servidor seu-dominio.com
 cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
         </li>
-        <li>Inicie o túnel[cite: 1]:
+        <li>Inicie o túnel:
           <pre><code>cloudflared tunnel run meu-servidor</code></pre>
         </li>
       </ol>
 
       <h3 id="gerenciamento-tunnels-cli">Gerenciamento de túneis via CLI</h3>
       <ul>
-        <li><strong>Listar túneis existentes:</strong> <code>cloudflared tunnel list</code>[cite: 1]</li>
-        <li><strong>Deletar um túnel antigo ou quebrado:</strong> <code>cloudflared tunnel delete NOME_OU_ID --force</code>[cite: 1]</li>
-        <li><strong>Localizar Token do túnel no painel Zero Trust:</strong> acesse <strong>Networks &gt; Tunnels &gt; Configure</strong> e copie a chave longa após <code>--token</code>[cite: 1].</li>
-        <li><strong>Executar túnel via Token:</strong> <code>cloudflared tunnel run --token SEU_TOKEN</code>[cite: 1]</li>
+        <li><strong>Listar túneis existentes:</strong> <code>cloudflared tunnel list</code></li>
+        <li><strong>Deletar um túnel antigo ou quebrado:</strong> <code>cloudflared tunnel delete NOME_OU_ID --force</code></li>
+        <li><strong>Localizar Token do túnel no painel Zero Trust:</strong> acesse <strong>Networks &gt; Tunnels &gt; Configure</strong> e copie a chave longa após <code>--token</code>.</li>
+        <li><strong>Executar túnel via Token:</strong> <code>cloudflared tunnel run --token SEU_TOKEN</code></li>
       </ul>
 
       <h3 id="rotear-desrotear-subdominios">Rotear e desrotear subdomínios</h3>
       <h4>Como rotear um novo subdomínio</h4>
       <ol>
-        <li>Adicione a regra no arquivo <code>~/.cloudflared/config.yml</code> antes de <code>http_status:404</code>[cite: 1]:
+        <li>Adicione a regra no arquivo <code>~/.cloudflared/config.yml</code> antes de <code>http_status:404</code>:
           <pre><code>  - hostname: app.seu-dominio.com
     service: http://localhost:8080</code></pre>
         </li>
-        <li>Crie a rota no DNS[cite: 1]:
+        <li>Crie a rota no DNS:
           <pre><code>cloudflared tunnel route dns meu-servidor app.seu-dominio.com</code></pre>
         </li>
-        <li>Reinicie o túnel[cite: 1]:
+        <li>Reinicie o túnel:
           <pre><code>pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
         </li>
       </ol>
@@ -745,9 +747,9 @@ cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
 
       <h4>Como desrotear um subdomínio</h4>
       <ol>
-        <li>No painel da Cloudflare em <strong>DNS &gt; Records</strong>, delete o registro CNAME apontado para o túnel[cite: 1].</li>
-        <li>Abra o arquivo <code>~/.cloudflared/config.yml</code> e apague as linhas do subdomínio[cite: 1].</li>
-        <li>Reinicie o túnel[cite: 1]:
+        <li>No painel da Cloudflare em <strong>DNS &gt; Records</strong>, delete o registro CNAME apontado para o túnel.</li>
+        <li>Abra o arquivo <code>~/.cloudflared/config.yml</code> e apague as linhas do subdomínio.</li>
+        <li>Reinicie o túnel:
           <pre><code>pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
         </li>
       </ol>
@@ -758,22 +760,22 @@ cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
     <!-- Seção 7: Segurança e WAF -->
     <section id="seguranca-waf" class="wiki-section">
       <h2>7. Segurança, WAF e bloqueio de robôs</h2>
-      <p>Servidores conectados à internet recebem constantes varreduras automáticas de robôs procurando falhas conhecidas, como diretórios de WordPress ou arquivos PHP desatualizados[cite: 1]. Em um site estático, essas requisições recebem código 404 (arquivo não encontrado) e não comprometem o sistema[cite: 1].</p>
+      <p>Servidores conectados à internet recebem constantes varreduras automáticas de robôs procurando falhas conhecidas, como diretórios de WordPress ou arquivos PHP desatualizados. Em um site estático, essas requisições recebem código 404 (arquivo não encontrado) e não comprometem o sistema.</p>
 
       <h3 id="bloqueio-cloudflare">Bloqueio na Cloudflare (recomendado para economizar recursos)</h3>
       <ul>
-        <li><strong>Bot Fight Mode:</strong> no painel da Cloudflare, acesse <strong>Segurança &gt; Bots</strong> e ative a proteção automática para barrar robôs conhecidos[cite: 1].</li>
-        <li><strong>Regras de WAF personalizadas:</strong> em <strong>Segurança &gt; WAF</strong>, crie uma regra com ação <strong>Bloquear</strong> caso a URI contenha <code>/wp-</code> ou termine com <code>.php</code>[cite: 1].</li>
-        <li><strong>Restrição geográfica:</strong> configure o WAF para bloquear ou emitir desafio interativo (Managed Challenge) para países fora do Brasil[cite: 1].</li>
-        <li><strong>Cloudflare Access (Zero Trust):</strong> adicione uma camada de autenticação por e-mail (PIN) antes de liberar a abertura de páginas administrativas ou confidenciais[cite: 1].</li>
+        <li><strong>Bot Fight Mode:</strong> no painel da Cloudflare, acesse <strong>Segurança &gt; Bots</strong> e ative a proteção automática para barrar robôs conhecidos.</li>
+        <li><strong>Regras de WAF personalizadas:</strong> em <strong>Segurança &gt; WAF</strong>, crie uma regra com ação <strong>Bloquear</strong> caso a URI contenha <code>/wp-</code> ou termine com <code>.php</code>.</li>
+        <li><strong>Restrição geográfica:</strong> configure o WAF para bloquear ou emitir desafio interativo (Managed Challenge) para países fora do Brasil.</li>
+        <li><strong>Cloudflare Access (Zero Trust):</strong> adicione uma camada de autenticação por e-mail (PIN) antes de liberar a abertura de páginas administrativas ou confidenciais.</li>
       </ul>
 
       <h3 id="bloqueio-exploits-nginx">Bloqueio de invasões e SQL injection no Nginx</h3>
       <ol>
-        <li>Baixe o conjunto de regras de bloqueio de exploits[cite: 1]:
+        <li>Baixe o conjunto de regras de bloqueio de exploits:
           <pre><code>curl -o $PREFIX/etc/nginx/block-exploits.conf https://raw.githubusercontent.com/NginxProxyManager/nginx-proxy-manager/refs/heads/develop/docker/rootfs/etc/nginx/conf.d/include/block-exploits.conf</code></pre>
         </li>
-        <li>Inclua o arquivo dentro do bloco <code>server</code> no <code>$PREFIX/etc/nginx/nginx.conf</code>[cite: 1]:
+        <li>Inclua o arquivo dentro do bloco <code>server</code> no <code>$PREFIX/etc/nginx/nginx.conf</code>:
           <pre><code>server {
     listen 8080;
     server_name localhost;
@@ -786,7 +788,7 @@ cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
     }
 }</code></pre>
         </li>
-        <li>Valide e recarregue o servidor[cite: 1]:
+        <li>Valide e recarregue o servidor:
           <pre><code>nginx -t &amp;&amp; nginx -s reload</code></pre>
         </li>
       </ol>
@@ -797,31 +799,31 @@ cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
     <!-- Seção 8: Tmux e persistência -->
     <section id="execucao-continua" class="wiki-section">
       <h2>8. Sessões e persistência com Tmux</h2>
-      <p>Para manter o Nginx, o túnel e eventuais scripts rodando após desconectar do SSH ou fechar o aplicativo[cite: 1]:</p>
+      <p>Para manter o Nginx, o túnel e eventuais scripts rodando após desconectar do SSH ou fechar o aplicativo:</p>
 
       <h3 id="evitar-suspensao-android">Evitar a suspensão pelo Android</h3>
       <ul>
-        <li>Execute o comando de trava de processador[cite: 1]:
+        <li>Execute o comando de trava de processador:
           <pre><code>termux-wake-lock</code></pre>
         </li>
-        <li>Nas configurações do celular, vá em <strong>Aplicativos &gt; Termux &gt; Bateria</strong> e defina como <strong>Sem restrições</strong>[cite: 1].</li>
+        <li>Nas configurações do celular, vá em <strong>Aplicativos &gt; Termux &gt; Bateria</strong> e defina como <strong>Sem restrições</strong>.</li>
       </ul>
 
       <h3 id="gerenciamento-tmux">Gerenciamento de sessões com Tmux</h3>
       <ul>
-        <li><strong>Criar sessão nomeada:</strong> <code>tmux new -s site</code>[cite: 1]</li>
-        <li><strong>Listar todas as sessões:</strong> <code>tmux ls</code>[cite: 1]</li>
-        <li><strong>Reconectar a uma sessão:</strong> <code>tmux attach -t site</code>[cite: 1]</li>
-        <li><strong>Desconectar mantendo processos vivos:</strong> pressione <code>Ctrl + B</code> e depois <code>D</code>[cite: 1].</li>
-        <li><strong>Encerrar uma sessão nomeada:</strong> <code>tmux kill-session -t site</code>[cite: 1]</li>
-        <li><strong>Encerrar todas as sessões de uma vez:</strong> <code>tmux kill-server</code>[cite: 1]</li>
+        <li><strong>Criar sessão nomeada:</strong> <code>tmux new -s site</code></li>
+        <li><strong>Listar todas as sessões:</strong> <code>tmux ls</code></li>
+        <li><strong>Reconectar a uma sessão:</strong> <code>tmux attach -t site</code></li>
+        <li><strong>Desconectar mantendo processos vivos:</strong> pressione <code>Ctrl + B</code> e depois <code>D</code>.</li>
+        <li><strong>Encerrar uma sessão nomeada:</strong> <code>tmux kill-session -t site</code></li>
+        <li><strong>Encerrar todas as sessões de uma vez:</strong> <code>tmux kill-server</code></li>
       </ul>
 
       <h3 id="janelas-tmux">Múltiplas janelas dentro da mesma sessão</h3>
       <ul>
-        <li><strong>Criar nova janela:</strong> pressione <code>Ctrl + B</code> e depois <code>C</code>[cite: 1].</li>
-        <li><strong>Alternar entre janelas:</strong> pressione <code>Ctrl + B</code> e depois <code>N</code> (ou o número da janela)[cite: 1].</li>
-        <li><strong>Dividir tela horizontalmente:</strong> pressione <code>Ctrl + B</code> e depois <code>"</code>[cite: 1].</li>
+        <li><strong>Criar nova janela:</strong> pressione <code>Ctrl + B</code> e depois <code>C</code>.</li>
+        <li><strong>Alternar entre janelas:</strong> pressione <code>Ctrl + B</code> e depois <code>N</code> (ou o número da janela).</li>
+        <li><strong>Dividir tela horizontalmente:</strong> pressione <code>Ctrl + B</code> e depois <code>"</code>.</li>
       </ul>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
@@ -830,17 +832,17 @@ cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
     <!-- Seção 9: SSH remoto -->
     <section id="ssh-remoto" class="wiki-section">
       <h2>9. SSH remoto via Cloudflare</h2>
-      <p>Permite acessar o terminal do celular com segurança a partir de qualquer rede externa através de um subdomínio[cite: 1].</p>
+      <p>Permite acessar o terminal do celular com segurança a partir de qualquer rede externa através de um subdomínio.</p>
 
       <h3 id="ssh-config-servidor">Configuração no servidor (Termux)</h3>
-      <p>Adicione o serviço SSH no arquivo <code>~/.cloudflared/config.yml</code>[cite: 1]:</p>
+      <p>Adicione o serviço SSH no arquivo <code>~/.cloudflared/config.yml</code>:</p>
       <pre><code>ingress:
   - hostname: seu-dominio.com
     service: http://localhost:8080
   - hostname: ssh.seu-dominio.com
     service: ssh://localhost:8022
   - service: http_status:404</code></pre>
-      <p>Crie a rota e reinicie o túnel[cite: 1]:</p>
+      <p>Crie a rota e reinicie o túnel:</p>
       <pre><code>cloudflared tunnel route dns meu-servidor ssh.seu-dominio.com
 pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
 
@@ -848,27 +850,27 @@ pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
       <p>Tentar conectar diretamente com <code>ssh usuario@ssh.seu-dominio.com</code> faz o terminal travar sem resposta. Isso acontece porque a Cloudflare intercepta conexões como tráfego HTTP/HTTPS web comum e rejeita conexões diretas em protocolos TCP puros (como a porta 22 ou 8022 do SSH). Para funcionar, o computador precisa do utilitário <code>cloudflared</code> instalado para encapsular a conexão SSH dentro de um canal compatível com o túnel.</p>
 
       <h3 id="ssh-linux-macos">Conectar a partir de Linux ou macOS</h3>
-      <p>Adicione ao arquivo <code>~/.ssh/config</code> do computador[cite: 1]:</p>
+      <p>Adicione ao arquivo <code>~/.ssh/config</code> do computador:</p>
       <pre><code>Host ssh.seu-dominio.com
   ProxyCommand cloudflared access ssh --hostname %h</code></pre>
-      <p>Conecte normalmente: <code>ssh u0_a229@ssh.seu-dominio.com</code>[cite: 1]. O cliente SSH usará o <code>cloudflared</code> automaticamente em segundo plano para fazer a ponte[cite: 1].</p>
+      <p>Conecte normalmente: <code>ssh u0_a229@ssh.seu-dominio.com</code>. O cliente SSH usará o <code>cloudflared</code> automaticamente em segundo plano para fazer a ponte.</p>
 
       <h3 id="ssh-windows">Conectar a partir do Windows</h3>
       <ol>
-        <li>Instale o utilitário pelo PowerShell: <code>winget install --id Cloudflare.cloudflared</code>[cite: 1]</li>
-        <li>Ajuste as permissões de segurança do arquivo de configuração[cite: 1]:
+        <li>Instale o utilitário pelo PowerShell: <code>winget install --id Cloudflare.cloudflared</code></li>
+        <li>Ajuste as permissões de segurança do arquivo de configuração:
           <pre><code>icacls "$env:USERPROFILE\.ssh\config" /inheritance:r /grant:r "$($env:USERNAME):F"</code></pre>
         </li>
-        <li>No arquivo <code>C:\Users\SEU_USUARIO\.ssh\config</code>, use barras normais (<code>/</code>) para o executável[cite: 1]:
+        <li>No arquivo <code>C:\Users\SEU_USUARIO\.ssh\config</code>, use barras normais (<code>/</code>) para o executável:
           <pre><code>Host ssh.seu-dominio.com
   ProxyCommand "C:/cloudflared/cloudflared.exe" access ssh --hostname %h
 # Se estiver nas variáveis de ambiente:
 # ProxyCommand cloudflared.exe access ssh --hostname %h</code></pre>
         </li>
-        <li>Caso o Cloudflare Access esteja ativo, autentique antes pelo terminal[cite: 1]:
+        <li>Caso o Cloudflare Access esteja ativo, autentique antes pelo terminal:
           <pre><code>cloudflared.exe access login https://ssh.seu-dominio.com</code></pre>
         </li>
-        <li>Conecte via terminal: <code>ssh u0_a229@ssh.seu-dominio.com</code>[cite: 1]</li>
+        <li>Conecte via terminal: <code>ssh u0_a229@ssh.seu-dominio.com</code></li>
       </ol>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
@@ -877,150 +879,171 @@ pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
     <!-- Seção 10: Arquivos e Git -->
     <section id="gestao-arquivos-git" class="wiki-section">
       <h2>10. Arquivos e Git (SCP, Rsync e fluxo Git)</h2>
-      <p>Procedimentos para sincronização de arquivos compilados, comportamento de barras na transferência e controle de versão completo com Git e GitHub[cite: 1].</p>
+      <p>Procedimentos para sincronização de arquivos compilados, comportamento de barras na transferência e controle de versão completo com Git e GitHub.</p>
 
       <h3 id="transferencia-rsync">Transferência com Rsync e SCP</h3>
-      <p>O Rsync compara os arquivos locais e remotos, transferindo apenas o que foi alterado para economizar largura de banda e tempo[cite: 1]:</p>
+      <p>O Rsync compara os arquivos locais e remotos, transferindo apenas o que foi alterado para economizar largura de banda e tempo:</p>
       <ul>
-        <li><strong>Enviar do computador para o Termux:</strong>[cite: 1]
+        <li><strong>Enviar do computador para o Termux:</strong>
           <pre><code>rsync -avz -e 'ssh -p 8022' ~/meu-site/_site/ u0_a229@IP_DO_CELULAR:~/gustavoribeiro-net/_site</code></pre>
         </li>
-        <li><strong>Puxar do Termux para o computador:</strong>[cite: 1]
+        <li><strong>Enviar para servidor remoto padrão (porta 22):</strong>
+          <pre><code>rsync -avz deepclassicpress/ ssh.gustavoribeiro.net:~/ClassicPress-release-2.7.2/wp-content/themes/gustavoribeiro-net/</code></pre>
+        </li>
+        <li><strong>Puxar do Termux para o computador:</strong>
           <pre><code>rsync -avz -e 'ssh -p 8022' u0_a229@IP_DO_CELULAR:~/gustavoribeiro-net/_site/ ~/Downloads/site-backup</code></pre>
         </li>
-        <li><strong>Ignorar arquivos já existentes sem atualizar:</strong> adicione o parâmetro <code>--ignore-existing</code>[cite: 1].</li>
+        <li><strong>Ignorar arquivos já existentes sem atualizar:</strong> adicione o parâmetro <code>--ignore-existing</code>.</li>
+      </ul>
+
+      <div class="callout callout-warning">
+        <strong>Atenção ao uso do parâmetro <code>-e</code>:</strong> A opção <code>-e</code> serve estritamente para especificar o comando do protocolo de conexão remota (ex: <code>-e ssh</code> ou <code>-e 'ssh -p 8022'</code>). Colocar o caminho de uma pasta logo após a opção <code>-e</code> (ex: <code>rsync -avz -e pasta/ ...</code>) faz o rsync tentar executar essa pasta como um programa, resultando no erro <code>exec on 'pasta/': Permission denied</code>. Remova a opção <code>-e</code> ou especifique <code>-e ssh</code>.
+      </div>
+
+      <h3 id="rsync-dry-run">Simulação de transferência sem alterar arquivos (Dry-Run)</h3>
+      <p>Para testar e verificar quais arquivos seriam transferidos sem realizar qualquer modificação real no servidor, adicione a opção <code>-n</code> (ou <code>--dry-run</code>):</p>
+      <pre><code>rsync -avzn deepclassicpress/ ssh.gustavoribeiro.net:~/ClassicPress-release-2.7.2/wp-content/themes/gustavoribeiro-net/</code></pre>
+      <p>O terminal exibirá a lista completa de arquivos que seriam afetados, permitindo validar os caminhos antes de executar a transferência definitiva.</p>
+
+      <h3 id="ls-data-modificacao">Exibir data de modificação de arquivos com o comando ls</h3>
+      <p>Para conferir se os arquivos foram atualizados recentemente no servidor ou na máquina local, utilize os seguintes parâmetros do comando <code>ls</code>:</p>
+      <ul>
+        <li><strong>Formato longo com datas:</strong> <code>ls -l</code></li>
+        <li><strong>Ordenar por data de modificação (mais recentes primeiro):</strong> <code>ls -lt</code></li>
+        <li><strong>Ordenar por data na ordem inversa (mais antigos primeiro):</strong> <code>ls -ltr</code></li>
+        <li><strong>Formato padronizado ISO (AAAA-MM-DD HH:MM):</strong> <code>ls -l --time-style=long-iso</code></li>
       </ul>
 
       <h3 id="barra-rsync-scp">Uso da barra no Rsync e SCP</h3>
-      <p>O uso da barra (<code>/</code>) no final do caminho afeta diretamente a forma como diretórios e arquivos são criados no destino[cite: 1].</p>
+      <p>O uso da barra (<code>/</code>) no final do caminho afeta diretamente a forma como diretórios e arquivos são criados no destino.</p>
 
       <h4>1. Comportamento da barra no caminho de origem</h4>
       <ul>
-        <li><strong>No Rsync:</strong>[cite: 1]
+        <li><strong>No Rsync:</strong>
           <ul>
-            <li><strong>Sem barra (<code>pasta</code>):</strong> copia a pasta inteira (cria o diretório <code>pasta</code> dentro do destino)[cite: 1].</li>
-            <li><strong>Com barra (<code>pasta/</code>):</strong> copia apenas o conteúdo interno direto para o destino, sem recriar a pasta principal[cite: 1]. Regra prática: a barra significa <em>"entrar na pasta e transferir o que está dentro"</em>[cite: 1].</li>
+            <li><strong>Sem barra (<code>pasta</code>):</strong> copia a pasta inteira (cria o diretório <code>pasta</code> dentro do destino).</li>
+            <li><strong>Com barra (<code>pasta/</code>):</strong> copia apenas o conteúdo interno direto para o destino, sem recriar a pasta principal. Regra prática: a barra significa <em>"entrar na pasta e transferir o que está dentro"</em>.</li>
           </ul>
         </li>
-        <li><strong>No SCP:</strong>[cite: 1]
+        <li><strong>No SCP:</strong>
           <ul>
-            <li>O comando <code>scp -r</code> sempre copia a pasta inteira, independentemente de colocar ou não a barra no final[cite: 1]. Ambos os formatos geram o mesmo resultado[cite: 1].</li>
+            <li>O comando <code>scp -r</code> sempre copia a pasta inteira, independentemente de colocar ou não a barra no final. Ambos os formatos geram o mesmo resultado.</li>
           </ul>
         </li>
       </ul>
 
       <h4>2. Transferência sem o parâmetro recursivo (-r ou -a)</h4>
       <ul>
-        <li><strong>No SCP:</strong> cancela a operação imediatamente com mensagem de erro informando que o item é um diretório[cite: 1].</li>
-        <li><strong>No Rsync:</strong> ignora o diretório silenciosamente ou exibe o aviso <code>skipping directory</code>[cite: 1]. É necessário usar <code>-r</code> ou <code>-a</code> (que já inclui a recursividade automaticamente)[cite: 1].</li>
+        <li><strong>No SCP:</strong> cancela a operação imediatamente com mensagem de erro informando que o item é um diretório.</li>
+        <li><strong>No Rsync:</strong> ignora o diretório silenciosamente ou exibe o aviso <code>skipping directory</code>. É necessário usar <code>-r</code> ou <code>-a</code> (que já inclui a recursividade automaticamente).</li>
       </ul>
 
       <h4>3. Enviar apenas o conteúdo interno usando o SCP</h4>
-      <p>Para transferir somente os arquivos internos sem recriar a pasta raiz com o SCP, use o caractere coringa <code>/*</code> na origem[cite: 1]:</p>
+      <p>Para transferir somente os arquivos internos sem recriar a pasta raiz com o SCP, use o caractere coringa <code>/*</code> na origem:</p>
       <pre><code># Apenas arquivos da raiz da pasta:
 scp pasta/* usuario@servidor:/caminho/destino/
 
 # Se houver subpastas internas (mantém a estrutura interna sem recriar a pasta principal):
 scp -r pasta/* usuario@servidor:/caminho/destino/</code></pre>
       <div class="callout" style="background-color: #f8fafc; border-left: 4px solid var(--accent-color);">
-        <strong>Atenção a arquivos ocultos:</strong> O coringa <code>*</code> ignora arquivos ocultos (que começam com <code>.</code>)[cite: 1]. Para transferir arquivos ocultos sem duplicar o diretório raiz, o uso do Rsync com barra (<code>rsync -avz pasta/ destino/</code>) é o método mais seguro[cite: 1].
+        <strong>Atenção a arquivos ocultos:</strong> O coringa <code>*</code> ignora arquivos ocultos (que começam com <code>.</code>). Para transferir arquivos ocultos sem duplicar o diretório raiz, o uso do Rsync com barra (<code>rsync -avz pasta/ destino/</code>) é o método mais seguro.
       </div>
 
       <h4>4. A barra na pasta de destino</h4>
       <ul>
-        <li><strong>Se o diretório de destino já existe:</strong> tanto faz usar <code>destino</code> ou <code>destino/</code>; ambos recebem os arquivos corretamente[cite: 1].</li>
-        <li><strong>Se o diretório de destino não existe (ao copiar arquivo único):</strong>[cite: 1]
+        <li><strong>Se o diretório de destino já existe:</strong> tanto faz usar <code>destino</code> ou <code>destino/</code>; ambos recebem os arquivos corretamente.</li>
+        <li><strong>Se o diretório de destino não existe (ao copiar arquivo único):</strong>
           <ul>
-            <li><strong>Com barra (<code>destino/</code>):</strong> o sistema reconhece explicitamente que o caminho é uma pasta e evita erros[cite: 1].</li>
-            <li><strong>Sem barra (<code>destino</code>):</strong> o comando cria um arquivo chamado <code>destino</code>, renomeando o arquivo enviado por engano em vez de guardá-lo em uma pasta[cite: 1].</li>
+            <li><strong>Com barra (<code>destino/</code>):</strong> o sistema reconhece explicitamente que o caminho é uma pasta e evita erros.</li>
+            <li><strong>Sem barra (<code>destino</code>):</strong> o comando cria um arquivo chamado <code>destino</code>, renomeando o arquivo enviado por engano em vez de guardá-lo em uma pasta.</li>
           </ul>
         </li>
       </ul>
 
       <h3 id="autenticacao-github">Autenticação no GitHub</h3>
-      <p>O GitHub exige chaves SSH ou tokens de acesso pessoal no terminal em substituição a senhas convencionais[cite: 1].</p>
+      <p>O GitHub exige chaves SSH ou tokens de acesso pessoal no terminal em substituição a senhas convencionais.</p>
 
       <h4>Opção A: Chave SSH Ed25519 (recomendada)</h4>
       <ol>
-        <li>Gere a chave: <code>ssh-keygen -t ed25519 -C "seu-email@dominio.com"</code>[cite: 1]</li>
-        <li>Copie a chave pública: <code>cat ~/.ssh/id_ed25519.pub</code>[cite: 1]</li>
-        <li>No GitHub, vá em <strong>Settings &gt; SSH and GPG keys &gt; New SSH Key</strong> e cole o conteúdo[cite: 1].</li>
-        <li>Altere a URL do repositório local para SSH[cite: 1]:
+        <li>Gere a chave: <code>ssh-keygen -t ed25519 -C "seu-email@dominio.com"</code></li>
+        <li>Copie a chave pública: <code>cat ~/.ssh/id_ed25519.pub</code></li>
+        <li>No GitHub, vá em <strong>Settings &gt; SSH and GPG keys &gt; New SSH Key</strong> e cole o conteúdo.</li>
+        <li>Altere a URL do repositório local para SSH:
           <pre><code>git remote set-url origin git@github.com:gustavoribeirorg/gustavoribeiro.net.git</code></pre>
         </li>
       </ol>
 
       <h4>Opção B: Personal Access Token (PAT)</h4>
       <ol>
-        <li>No GitHub, acesse <strong>Settings &gt; Developer settings &gt; Personal access tokens &gt; Tokens (classic)</strong>[cite: 1].</li>
-        <li>Gere um token com o escopo <code>repo</code> marcado e copie o código[cite: 1].</li>
-        <li>Salve a credencial no terminal para não digitar sempre[cite: 1]:
+        <li>No GitHub, acesse <strong>Settings &gt; Developer settings &gt; Personal access tokens &gt; Tokens (classic)</strong>.</li>
+        <li>Gere um token com o escopo <code>repo</code> marcado e copie o código.</li>
+        <li>Salve a credencial no terminal para não digitar sempre:
           <pre><code>git config --global credential.helper store</code></pre>
         </li>
       </ol>
 
       <h3 id="git-inicializacao-remoto">Inicialização e repositório remoto</h3>
       <ul>
-        <li><strong>Iniciar repositório local:</strong>[cite: 1]
+        <li><strong>Iniciar repositório local:</strong>
           <pre><code>git init</code></pre>
         </li>
-        <li><strong>Clonar repositório existente:</strong>[cite: 1]
+        <li><strong>Clonar repositório existente:</strong>
           <pre><code>git clone https://github.com/gustavoribeirorg/gustavoribeiro.net.git</code></pre>
         </li>
-        <li><strong>Adicionar repositório remoto:</strong>[cite: 1]
+        <li><strong>Adicionar repositório remoto:</strong>
           <pre><code>git remote add origin https://github.com/gustavoribeirorg/gustavoribeiro.net.git</code></pre>
         </li>
       </ul>
 
       <h3 id="git-fluxo-trabalho">Fluxo de trabalho diário e commits</h3>
       <ul>
-        <li><strong>Verificar status e arquivos modificados:</strong>[cite: 1]
+        <li><strong>Verificar status e arquivos modificados:</strong>
           <pre><code>git status</code></pre>
         </li>
-        <li><strong>Adicionar todos os arquivos modificados e novos ao staging:</strong>[cite: 1]
+        <li><strong>Adicionar todos os arquivos modificados e novos ao staging:</strong>
           <pre><code>git add .</code></pre>
         </li>
-        <li><strong>Ver diferenças exatas antes de confirmar o commit:</strong>[cite: 1]
+        <li><strong>Ver diferenças exatas antes de confirmar o commit:</strong>
           <pre><code>git diff --staged</code></pre>
         </li>
-        <li><strong>Confirmar alterações com mensagem direta:</strong>[cite: 1]
+        <li><strong>Confirmar alterações com mensagem direta:</strong>
           <pre><code>git commit -am "sua mensagem de commit aqui"</code></pre>
         </li>
-        <li><strong>Puxar alterações do repositório remoto:</strong>[cite: 1]
+        <li><strong>Puxar alterações do repositório remoto:</strong>
           <pre><code>git pull origin main</code></pre>
         </li>
-        <li><strong>Enviar alterações pela primeira vez (definindo upstream):</strong>[cite: 1]
+        <li><strong>Enviar alterações pela primeira vez (definindo upstream):</strong>
           <pre><code>git push -u origin main</code></pre>
         </li>
-        <li><strong>Enviar alterações nos próximos envios:</strong>[cite: 1]
+        <li><strong>Enviar alterações nos próximos envios:</strong>
           <pre><code>git push origin main</code></pre>
         </li>
-        <li><strong>Consultar histórico de commits:</strong>[cite: 1]
+        <li><strong>Consultar histórico de commits:</strong>
           <pre><code>git log</code></pre>
         </li>
       </ul>
 
       <h3 id="git-branches-merge">Gerenciamento de branches e merge</h3>
       <ul>
-        <li><strong>Listar branches locais:</strong>[cite: 1]
+        <li><strong>Listar branches locais:</strong>
           <pre><code>git branch</code></pre>
         </li>
-        <li><strong>Trocar para outro branch:</strong>[cite: 1]
+        <li><strong>Trocar para outro branch:</strong>
           <pre><code>git checkout main</code></pre>
         </li>
-        <li><strong>Mesclar alterações de outro branch no atual:</strong>[cite: 1]
+        <li><strong>Mesclar alterações de outro branch no atual:</strong>
           <pre><code>git merge master</code></pre>
         </li>
-        <li><strong>Excluir branch local:</strong>[cite: 1]
+        <li><strong>Excluir branch local:</strong>
           <pre><code>git branch -d master</code></pre>
         </li>
-        <li><strong>Excluir branch no repositório remoto:</strong>[cite: 1]
+        <li><strong>Excluir branch no repositório remoto:</strong>
           <pre><code>git push origin --delete master</code></pre>
         </li>
       </ul>
 
       <h3 id="git-cache-gitignore">Limpeza de cache, remoção e .gitignore</h3>
-      <p>Gerenciamento de arquivos ignorados e correção do índice de rastreamento do Git[cite: 1].</p>
+      <p>Gerenciamento de arquivos ignorados e correção do índice de rastreamento do Git.</p>
 
       <h4>1. Criar o arquivo .gitignore</h4>
       <pre><code>touch .gitignore</code></pre>
@@ -1029,13 +1052,13 @@ scp -r pasta/* usuario@servidor:/caminho/destino/</code></pre>
       <pre><code>git rm -r --cached nome-da-pasta/</code></pre>
 
       <h4>3. Registrar modificações, criações e deleções com git add -A</h4>
-      <p>O comando <code>git add -A</code> (ou <code>git add -u</code> para itens já rastreados) registra no índice tudo o que foi alterado, criado e também o que foi apagado do disco[cite: 1]:</p>
+      <p>O comando <code>git add -A</code> (ou <code>git add -u</code> para itens já rastreados) registra no índice tudo o que foi alterado, criado e também o que foi apagado do disco:</p>
       <pre><code>git add -A
 git commit -m "remove: deletando pastas antigas"
 git push</code></pre>
 
       <h4>4. Reconstruir todo o rastreamento do zero</h4>
-      <p>Limpa a memória do índice do Git e a remonta a partir do zero com base apenas no que realmente existe na pasta no momento[cite: 1]:</p>
+      <p>Limpa a memória do índice do Git e a remonta a partir do zero com base apenas no que realmente existe na pasta no momento:</p>
       <pre><code>git rm -r --cached .
 git add .
 git commit -m "chore: limpar cache do git e remover arquivos inexistentes"
@@ -1047,18 +1070,18 @@ git push</code></pre>
     <!-- Seção 11: Logs e GoAccess -->
     <section id="logs-goaccess" class="wiki-section">
       <h2>11. Logs, GoAccess e IP real</h2>
-      <p>Por padrão, conexões repassadas pela Cloudflare chegam com o endereço do proxy (ou <code>127.0.0.1</code> pelo túnel)[cite: 1]. Para que o Nginx registre o IP real dos visitantes nas variáveis <code>$remote_addr</code> e nos arquivos de log, utiliza-se o módulo <code>ngx_http_realip_module</code>[cite: 1].</p>
+      <p>Por padrão, conexões repassadas pela Cloudflare chegam com o endereço do proxy (ou <code>127.0.0.1</code> pelo túnel). Para que o Nginx registre o IP real dos visitantes nas variáveis <code>$remote_addr</code> e nos arquivos de log, utiliza-se o módulo <code>ngx_http_realip_module</code>.</p>
 
       <h3 id="capturar-ip-real">1. Capturar o IP real no Nginx</h3>
-      <p>Configuração completa baseada na lista oficial de faixas de IP da Cloudflare e loopback local[cite: 1]:</p>
+      <p>Configuração completa baseada na lista oficial de faixas de IP da Cloudflare e loopback local:</p>
 
       <h4>A. Verificar o suporte ao módulo Real IP</h4>
-      <p>Confirme se a compilação do Nginx inclui o módulo necessário[cite: 1]:</p>
+      <p>Confirme se a compilação do Nginx inclui o módulo necessário:</p>
       <pre><code>nginx -V 2>&1 | tr ' ' '\n' | grep realip
 # Deve exibir: --with-http_realip_module</code></pre>
 
       <h4>B. Criar o arquivo cloudflare.conf</h4>
-      <p>Crie o arquivo com as faixas IPv4, IPv6 e loopback local em <code>nano $PREFIX/etc/nginx/cloudflare.conf</code>[cite: 1]:</p>
+      <p>Crie o arquivo com as faixas IPv4, IPv6 e loopback local em <code>nano $PREFIX/etc/nginx/cloudflare.conf</code>:</p>
       <pre><code># Faixas locais e túnel
 set_real_ip_from 127.0.0.1;
 set_real_ip_from ::1;
@@ -1093,33 +1116,33 @@ set_real_ip_from 2c0f:f248::/32;
 real_ip_header CF-Connecting-IP;</code></pre>
 
       <h4>C. Incluir no nginx.conf e recarregar</h4>
-      <p>Abra o <code>$PREFIX/etc/nginx/nginx.conf</code> e adicione a diretiva dentro do bloco <code>http { ... }</code>[cite: 1]:</p>
+      <p>Abra o <code>$PREFIX/etc/nginx/nginx.conf</code> e adicione a diretiva dentro do bloco <code>http { ... }</code>:</p>
       <pre><code>http {
     include cloudflare.conf;
     # ... restante da configuração
 }</code></pre>
-      <p>Valide e aplique as alterações: <code>nginx -t &amp;&amp; nginx -s reload</code>[cite: 1].</p>
+      <p>Valide e aplique as alterações: <code>nginx -t &amp;&amp; nginx -s reload</code>.</p>
 
       <h3 id="monitoramento-logs-terminal">2. Monitoramento de logs pelo terminal</h3>
       <ul>
-        <li><strong>Acompanhar acessos em tempo real:</strong> <code>tail -f $PREFIX/var/log/nginx/access.log</code>[cite: 1]</li>
-        <li><strong>Ver últimas 30 linhas e continuar ao vivo:</strong> <code>tail -n 30 -f $PREFIX/var/log/nginx/access.log</code>[cite: 1]</li>
-        <li><strong>Exibir todo o histórico:</strong> <code>cat $PREFIX/var/log/nginx/access.log</code>[cite: 1]</li>
-        <li><strong>Acompanhar erros e bloqueios:</strong> <code>tail -f $PREFIX/var/log/nginx/error.log</code>[cite: 1]</li>
+        <li><strong>Acompanhar acessos em tempo real:</strong> <code>tail -f $PREFIX/var/log/nginx/access.log</code></li>
+        <li><strong>Ver últimas 30 linhas e continuar ao vivo:</strong> <code>tail -n 30 -f $PREFIX/var/log/nginx/access.log</code></li>
+        <li><strong>Exibir todo o histórico:</strong> <code>cat $PREFIX/var/log/nginx/access.log</code></li>
+        <li><strong>Acompanhar erros e bloqueios:</strong> <code>tail -f $PREFIX/var/log/nginx/error.log</code></li>
       </ul>
 
       <h3 id="exibir-logs-navegador">3. Exibir logs no navegador</h3>
       <h4>Opção A: Rota de texto puro no Nginx</h4>
-      <p>Adicione dentro do bloco <code>server { ... }</code> com sinal de correspondência exata (<code>=</code>) para evitar erros 404[cite: 1]:</p>
+      <p>Adicione dentro do bloco <code>server { ... }</code> com sinal de correspondência exata (<code>=</code>) para evitar erros 404:</p>
       <pre><code>location = /meus-logs {
     alias /data/data/com.termux/files/usr/var/log/nginx/access.log;
     default_type text/plain;
 }</code></pre>
-      <p>Acesse em <code>http://seusite.com/meus-logs</code> (sem barra no final)[cite: 1].</p>
+      <p>Acesse em <code>http://seusite.com/meus-logs</code> (sem barra no final).</p>
 
       <h4>Opção B: Link simbólico na pasta do site</h4>
       <pre><code>ln -s $PREFIX/var/log/nginx/access.log ~/caminho-da-sua-pasta/logs.txt</code></pre>
-      <p>Acesse direto por <code>http://seusite.com/logs.txt</code>[cite: 1].</p>
+      <p>Acesse direto por <code>http://seusite.com/logs.txt</code>.</p>
 
       <h3 id="painel-goaccess">4. Painel visual interativo com GoAccess</h3>
       <h4>Modo sob demanda (estático - recomendado para economizar bateria)</h4>
@@ -1127,14 +1150,14 @@ real_ip_header CF-Connecting-IP;</code></pre>
 goaccess $PREFIX/var/log/nginx/access.log -o ~/caminho-da-sua-pasta/relatorio.html --log-format=COMBINED</code></pre>
 
       <h4>Modo em tempo real com WebSocket</h4>
-      <p>No <code>nginx.conf</code>, configure o proxy WebSocket[cite: 1]:</p>
+      <p>No <code>nginx.conf</code>, configure o proxy WebSocket:</p>
       <pre><code>location /ws {
     proxy_pass http://127.0.0.1:7890;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
 }</code></pre>
-      <p>Execute o GoAccess em uma sessão do Tmux[cite: 1]:</p>
+      <p>Execute o GoAccess em uma sessão do Tmux:</p>
       <pre><code>goaccess $PREFIX/var/log/nginx/access.log -o ~/caminho-da-sua-pasta/relatorio.html --log-format=COMBINED --real-time-html --ws-url=wss://seusite.com/ws --port=7890</code></pre>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
@@ -1205,7 +1228,7 @@ pip install -r requirements.txt</code></pre>
     <!-- Seção 13: Resolução de problemas -->
     <section id="solucao-problemas" class="wiki-section">
       <h2>13. Resolução de problemas</h2>
-      <p>Tabela de referência para diagnóstico e resolução de erros comuns[cite: 1]:</p>
+      <p>Tabela de referência para diagnóstico e resolução de erros comuns:</p>
 
       <table>
         <thead>
@@ -1217,9 +1240,14 @@ pip install -r requirements.txt</code></pre>
         </thead>
         <tbody>
           <tr>
-            <td><code>Connection refused (porta 8022)</code>[cite: 1]</td>
-            <td>Serviço SSH inativo ou endereço IP alterado no celular[cite: 1].</td>
-            <td>Execute <code>sshd</code> no Termux e confirme o IP com <code>ifconfig</code>[cite: 1].</td>
+            <td><code>rsync: error: exec on 'pasta/': Permission denied / unexpected end of file</code></td>
+            <td>Uso incorreto da opção <code>-e</code> no rsync passando o caminho de uma pasta em vez do comando remote shell.</td>
+            <td>Remova a opção <code>-e</code> ou declare o protocolo explicitamente (ex: <code>-e ssh</code>).</td>
+          </tr>
+          <tr>
+            <td><code>Connection refused (porta 8022)</code></td>
+            <td>Serviço SSH inativo ou endereço IP alterado no celular.</td>
+            <td>Execute <code>sshd</code> no Termux e confirme o IP com <code>ifconfig</code>.</td>
           </tr>
           <tr>
             <td><code>ssh: connect to host ssh.dominio.com port 22: Connection timed out (travado)</code></td>
@@ -1227,19 +1255,19 @@ pip install -r requirements.txt</code></pre>
             <td>Instale o <code>cloudflared</code> no computador cliente e adicione o <code>ProxyCommand cloudflared access ssh --hostname %h</code> no <code>~/.ssh/config</code>.</td>
           </tr>
           <tr>
-            <td><code>Error 1033 (Cloudflare)</code>[cite: 1]</td>
-            <td>O processo <code>cloudflared</code> está desligado ou perdeu a conexão com os servidores da Cloudflare[cite: 1].</td>
-            <td>Verifique com <code>pgrep cloudflared</code> e reinicie o túnel via Tmux com <code>cloudflared tunnel run meu-site</code> ou via <code>--token</code>[cite: 1].</td>
+            <td><code>Error 1033 (Cloudflare)</code></td>
+            <td>O processo <code>cloudflared</code> está desligado ou perdeu a conexão com os servidores da Cloudflare.</td>
+            <td>Verifique com <code>pgrep cloudflared</code> e reinicie o túnel via Tmux com <code>cloudflared tunnel run meu-site</code> ou via <code>--token</code>.</td>
           </tr>
           <tr>
-            <td><code>Unable to reach the origin service (dial tcp 127.0.0.1:8080)</code>[cite: 1]</td>
-            <td>O túnel está ativo, mas o Nginx ou servidor Python não está rodando na porta indicada[cite: 1].</td>
-            <td>Inicie o servidor web e confirme com <code>netstat -tuln</code> ou <code>curl -I http://localhost:8080</code>[cite: 1].</td>
+            <td><code>Unable to reach the origin service (dial tcp 127.0.0.1:8080)</code></td>
+            <td>O túnel está ativo, mas o Nginx ou servidor Python não está rodando na porta indicada.</td>
+            <td>Inicie o servidor web e confirme com <code>netstat -tuln</code> ou <code>curl -I http://localhost:8080</code>.</td>
           </tr>
           <tr>
-            <td><code>An A, AAAA, or CNAME record with that host already exists</code>[cite: 1]</td>
-            <td>Conflito com registros de hospedagens anteriores (ex: GitHub Pages)[cite: 1].</td>
-            <td>Remova os registros A e AAAA antigos do domínio no painel da Cloudflare e repita o comando de rota[cite: 1].</td>
+            <td><code>An A, AAAA, or CNAME record with that host already exists</code></td>
+            <td>Conflito com registros de hospedagens anteriores (ex: GitHub Pages).</td>
+            <td>Remova os registros A e AAAA antigos do domínio no painel da Cloudflare e repita o comando de rota.</td>
           </tr>
           <tr>
             <td><code>server can't find subdominio: NXDOMAIN / Endereço não encontrado</code></td>
@@ -1272,54 +1300,54 @@ pip install -r requirements.txt</code></pre>
             <td>Evite reiniciar o túnel por sessões remotas dependentes dele; configure novas rotas pelo painel Web Zero Trust ou use conexão física.</td>
           </tr>
           <tr>
-            <td><code>Página 404 padrão do Nginx exibida em vez da personalizada</code>[cite: 1]</td>
-            <td>Falta da diretiva <code>root</code> dentro de <code>location = /404.html</code>, arquivo inexistente ou falha na recarga do Nginx[cite: 1].</td>
-            <td>Declare <code>root</code> explicitamente dentro de <code>location = /404.html { internal; }</code>, confirme a existência do arquivo com <code>ls</code> e force o reinício com <code>pkill nginx &amp;&amp; nginx</code>[cite: 1].</td>
+            <td><code>Página 404 padrão do Nginx exibida em vez da personalizada</code></td>
+            <td>Falta da diretiva <code>root</code> dentro de <code>location = /404.html</code>, arquivo inexistente ou falha na recarga do Nginx.</td>
+            <td>Declare <code>root</code> explicitamente dentro de <code>location = /404.html { internal; }</code>, confirme a existência do arquivo com <code>ls</code> e force o reinício com <code>pkill nginx &amp;&amp; nginx</code>.</td>
           </tr>
           <tr>
-            <td><code>TypeError: __init__() got an unexpected keyword argument 'capture_output'</code>[cite: 1]</td>
-            <td>Script Python usando recurso do Python 3.7+ em interpretador Python 3.6[cite: 1].</td>
-            <td>Substitua <code>capture_output=True</code> por <code>stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True</code>[cite: 1].</td>
+            <td><code>TypeError: __init__() got an unexpected keyword argument 'capture_output'</code></td>
+            <td>Script Python usando recurso do Python 3.7+ em interpretador Python 3.6.</td>
+            <td>Substitua <code>capture_output=True</code> por <code>stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True</code>.</td>
           </tr>
           <tr>
-            <td><code>Falha na compilação da gem sass-embedded (Dart Sass)</code>[cite: 1]</td>
-            <td>Incompatibilidade do binário Dart Sass em processadores Linux 32-bit[cite: 1].</td>
-            <td>Fixe <code>gem "jekyll-sass-converter", "~> 2.0"</code> no Gemfile e rode <code>bundle update</code>[cite: 1].</td>
+            <td><code>Falha na compilação da gem sass-embedded (Dart Sass)</code></td>
+            <td>Incompatibilidade do binário Dart Sass em processadores Linux 32-bit.</td>
+            <td>Fixe <code>gem "jekyll-sass-converter", "~> 2.0"</code> no Gemfile e rode <code>bundle update</code>.</td>
           </tr>
           <tr>
-            <td><code>Imagens convertidas aparecem rotacionadas ("deitadas")</code>[cite: 1]</td>
-            <td>ImageMagick ignorou os metadados de orientação EXIF da câmera[cite: 1].</td>
-            <td>Adicione o parâmetro <code>"-auto-orient"</code> no comando do ImageMagick antes da qualidade[cite: 1].</td>
+            <td><code>Imagens convertidas aparecem rotacionadas ("deitadas")</code></td>
+            <td>ImageMagick ignorou os metadados de orientação EXIF da câmera.</td>
+            <td>Adicione o parâmetro <code>"-auto-orient"</code> no comando do ImageMagick antes da qualidade.</td>
           </tr>
           <tr>
-            <td><code>Directory not empty (rmdir)</code>[cite: 1]</td>
-            <td>Tentativa de apagar pasta que contém arquivos[cite: 1].</td>
-            <td>Utilize <code>rm -rf nome_da_pasta</code> para remoção completa[cite: 1].</td>
+            <td><code>Directory not empty (rmdir)</code></td>
+            <td>Tentativa de apagar pasta que contém arquivos.</td>
+            <td>Utilize <code>rm -rf nome_da_pasta</code> para remoção completa.</td>
           </tr>
           <tr>
-            <td><code>Directory does not exist / Invalid or unwritable path (GoAccess)</code>[cite: 1]</td>
-            <td>Uso de barra inicial (ex: <code>/nome-pasta</code>) apontando para a raiz do Android[cite: 1].</td>
-            <td>Use <code>~/nome-pasta</code> ou <code>$HOME/nome-pasta</code> para referenciar o diretório de usuário do Termux[cite: 1].</td>
+            <td><code>Directory does not exist / Invalid or unwritable path (GoAccess)</code></td>
+            <td>Uso de barra inicial (ex: <code>/nome-pasta</code>) apontando para a raiz do Android.</td>
+            <td>Use <code>~/nome-pasta</code> ou <code>$HOME/nome-pasta</code> para referenciar o diretório de usuário do Termux.</td>
           </tr>
           <tr>
-            <td><code>Unable to authenticate WebSocket (GoAccess)</code>[cite: 1]</td>
-            <td>Tentativa de abrir WebSocket sem criptografia através do túnel HTTPS[cite: 1].</td>
-            <td>Configure o bloco <code>location /ws</code> com <code>proxy_pass</code> no Nginx e aponte o parâmetro <code>--ws-url=wss://seusite.com/ws</code>[cite: 1].</td>
+            <td><code>Unable to authenticate WebSocket (GoAccess)</code></td>
+            <td>Tentativa de abrir WebSocket sem criptografia através do túnel HTTPS.</td>
+            <td>Configure o bloco <code>location /ws</code> com <code>proxy_pass</code> no Nginx e aponte o parâmetro <code>--ws-url=wss://seusite.com/ws</code>.</td>
           </tr>
           <tr>
-            <td><code>Bad permissions on .ssh/config (Windows)</code>[cite: 1]</td>
-            <td>OpenSSH rejeita arquivos com permissões abertas a outros usuários[cite: 1].</td>
-            <td>Execute <code>icacls "$env:USERPROFILE\.ssh\config" /inheritance:r /grant:r "$($env:USERNAME):F"</code> no PowerShell[cite: 1].</td>
+            <td><code>Bad permissions on .ssh/config (Windows)</code></td>
+            <td>OpenSSH rejeita arquivos com permissões abertas a outros usuários.</td>
+            <td>Execute <code>icacls "$env:USERPROFILE\.ssh\config" /inheritance:r /grant:r "$($env:USERNAME):F"</code> no PowerShell.</td>
           </tr>
           <tr>
-            <td><code>CreateProcessW failed error:2 (Windows)</code>[cite: 1]</td>
-            <td>Espaços no caminho ou barras invertidas no <code>ProxyCommand</code>[cite: 1].</td>
-            <td>Coloque o executável em <code>C:/cloudflared/cloudflared.exe</code> e declare o comando com barras normais (<code>/</code>)[cite: 1].</td>
+            <td><code>CreateProcessW failed error:2 (Windows)</code></td>
+            <td>Espaços no caminho ou barras invertidas no <code>ProxyCommand</code>.</td>
+            <td>Coloque o executável em <code>C:/cloudflared/cloudflared.exe</code> e declare o comando com barras normais (<code>/</code>).</td>
           </tr>
           <tr>
-            <td><code>websocket: bad handshake (Cloudflare)</code>[cite: 1]</td>
-            <td>Falta de autenticação no Cloudflare Access ou URL sem HTTPS[cite: 1].</td>
-            <td>Execute <code>cloudflared.exe access login https://seu-dominio.com</code> e valide as regras no painel Zero Trust[cite: 1].</td>
+            <td><code>websocket: bad handshake (Cloudflare)</code></td>
+            <td>Falta de autenticação no Cloudflare Access ou URL sem HTTPS.</td>
+            <td>Execute <code>cloudflared.exe access login https://seu-dominio.com</code> e valide as regras no painel Zero Trust.</td>
           </tr>
         </tbody>
       </table>
