@@ -298,88 +298,88 @@
       <li>
         <a href="#conexao-ssh" class="nav-main">1. Conexão SSH no Termux</a>
         <ul class="sub-menu">
-          <li><a href="#descobrir-usuario">Nome de usuário</a></li>
-          <li><a href="#acesso-computador">Acesso via computador</a></li>
-          <li><a href="#conectar-remoto">Conexão a servidor remoto</a></li>
+          <li><a href="#descobrir-usuario">Como descobrir o nome de usuário do Termux</a></li>
+          <li><a href="#acesso-computador">Acessar o Termux a partir do computador</a></li>
+          <li><a href="#conectar-remoto">Conectar do Termux a um servidor remoto</a></li>
           <li><a href="#finalizar-ssh">Finalizar o serviço SSH</a></li>
         </ul>
       </li>
       <li>
         <a href="#servidores-web" class="nav-main">2. Servidores web (Python e Nginx)</a>
         <ul class="sub-menu">
-          <li><a href="#python-http">Servidor HTTP em Python</a></li>
-          <li><a href="#migracao-nginx">Migração para o Nginx</a></li>
-          <li><a href="#verificar-portas">Verificação de processos e portas</a></li>
+          <li><a href="#python-http">Servidor HTTP simples em Python</a></li>
+          <li><a href="#migracao-nginx">Migração para o Nginx (recomendado)</a></li>
+          <li><a href="#verificar-portas">Como verificar os servidores e portas em execução</a></li>
         </ul>
       </li>
       <li>
         <a href="#fluxo-jekyll" class="nav-main">3. Compilação e envio do Jekyll</a>
         <ul class="sub-menu">
-          <li><a href="#bundler-install">Bundler e dependências</a></li>
-          <li><a href="#bundle-exec">Prefixo bundle exec</a></li>
-          <li><a href="#compilacao-site">Compilação para arquivos estáticos</a></li>
-          <li><a href="#fluxo-transferencia">Fluxo de build e transferência</a></li>
+          <li><a href="#bundler-install">O que é o Bundler e o comando bundle install</a></li>
+          <li><a href="#bundle-exec">Para que serve o prefixo bundle exec</a></li>
+          <li><a href="#compilacao-site">Como funciona a compilação do site</a></li>
+          <li><a href="#fluxo-transferencia">Fluxo completo de compilação e transferência para o servidor</a></li>
           <li><a href="#linkagem-jekyll">Linkagem interna no Jekyll</a></li>
-          <li><a href="#jekyll-32bits">Compatibilidade em 32 bits</a></li>
+          <li><a href="#jekyll-32bits">Compatibilidade do Jekyll em arquiteturas 32 bits</a></li>
         </ul>
       </li>
       <li>
         <a href="#otimizacao-imagens" class="nav-main">4. Imagens e scripts Python</a>
         <ul class="sub-menu">
-          <li><a href="#conversao-imagemagick">ImageMagick e rotação EXIF</a></li>
-          <li><a href="#compatibilidade-python">Compatibilidade no Python 3.6</a></li>
+          <li><a href="#conversao-imagemagick">Conversão com ImageMagick e correção de rotação EXIF</a></li>
+          <li><a href="#compatibilidade-python">Compatibilidade de scripts no Python 3.6 (subprocess.run)</a></li>
         </ul>
       </li>
       <li>
         <a href="#pagina-404" class="nav-main">5. Página 404 personalizada no Nginx</a>
         <ul class="sub-menu">
           <li><a href="#config-404">Configuração no nginx.conf</a></li>
-          <li><a href="#testar-404">Testes da página de erro</a></li>
+          <li><a href="#testar-404">Como testar se a página 404 está funcionando</a></li>
         </ul>
       </li>
       <li>
         <a href="#cloudflare-tunnel" class="nav-main">6. Publicação com Cloudflare Tunnel</a>
         <ul class="sub-menu">
-          <li><a href="#instalacao-cloudflared">Instalação no cliente</a></li>
-          <li><a href="#instalacao-32bits">Instalação em 32 bits (i386)</a></li>
-          <li><a href="#testes-rapidos-tunnel">Testes rápidos locais</a></li>
-          <li><a href="#config-dominio-proprio">Configuração com domínio</a></li>
-          <li><a href="#gerenciamento-tunnels-cli">Gerenciamento via CLI</a></li>
+          <li><a href="#instalacao-cloudflared">Instalação do cloudflared no cliente (computador)</a></li>
+          <li><a href="#instalacao-32bits">Instalação em Linux 32 bits (incompatibilidade i386 vs 386)</a></li>
+          <li><a href="#testes-rapidos-tunnel">Testes rápidos sem domínio próprio (no celular)</a></li>
+          <li><a href="#config-dominio-proprio">Configuração com domínio próprio</a></li>
+          <li><a href="#gerenciamento-tunnels-cli">Gerenciamento de túneis via CLI</a></li>
           <li><a href="#rotear-desrotear-subdominios">Rotear e desrotear subdomínios</a></li>
-          <li><a href="#dns-obrigatorio">Rotas DNS obrigatórias</a></li>
-          <li><a href="#perigo-reinicio-ssh">Cuidados ao reiniciar túnel via SSH</a></li>
+          <li><a href="#dns-obrigatorio">Rotas DNS obrigatórias (evitar erro NXDOMAIN)</a></li>
+          <li><a href="#perigo-reinicio-ssh">Cuidados ao reiniciar o túnel via SSH remoto</a></li>
         </ul>
       </li>
       <li>
         <a href="#seguranca-waf" class="nav-main">7. Segurança, WAF e bloqueio de robôs</a>
         <ul class="sub-menu">
-          <li><a href="#bloqueio-cloudflare">Bloqueio na Cloudflare</a></li>
-          <li><a href="#bloqueio-exploits-nginx">Regras contra exploits no Nginx</a></li>
+          <li><a href="#bloqueio-cloudflare">Bloqueio na Cloudflare (recomendado para economizar recursos)</a></li>
+          <li><a href="#bloqueio-exploits-nginx">Bloqueio de invasões e SQL injection no Nginx</a></li>
         </ul>
       </li>
       <li>
         <a href="#execucao-continua" class="nav-main">8. Sessões e persistência com Tmux</a>
         <ul class="sub-menu">
-          <li><a href="#evitar-suspensao-android">Evitar suspensão no Android</a></li>
-          <li><a href="#gerenciamento-tmux">Gerenciamento de sessões</a></li>
-          <li><a href="#janelas-tmux">Múltiplas janelas e painéis</a></li>
+          <li><a href="#evitar-suspensao-android">Evitar a suspensão pelo Android</a></li>
+          <li><a href="#gerenciamento-tmux">Gerenciamento de sessões com Tmux</a></li>
+          <li><a href="#janelas-tmux">Múltiplas janelas dentro da mesma sessão</a></li>
         </ul>
       </li>
       <li>
         <a href="#ssh-remoto" class="nav-main">9. SSH remoto via Cloudflare</a>
         <ul class="sub-menu">
-          <li><a href="#ssh-config-servidor">Configuração no servidor</a></li>
+          <li><a href="#ssh-config-servidor">Configuração no servidor (Termux)</a></li>
           <li><a href="#ssh-bloqueio-direto">Por que a conexão direta trava</a></li>
-          <li><a href="#ssh-linux-macos">Acesso via Linux e macOS</a></li>
-          <li><a href="#ssh-windows">Acesso via Windows</a></li>
+          <li><a href="#ssh-linux-macos">Conectar a partir do Linux ou macOS</a></li>
+          <li><a href="#ssh-windows">Conectar a partir do Windows</a></li>
         </ul>
       </li>
       <li>
         <a href="#gestao-arquivos-git" class="nav-main">10. Arquivos e Git (SCP, Rsync e fluxo Git)</a>
         <ul class="sub-menu">
           <li><a href="#transferencia-rsync">Transferência com Rsync e SCP</a></li>
-          <li><a href="#rsync-dry-run">Simulação de transferência (dry-run)</a></li>
-          <li><a href="#ls-data-modificacao">Exibir data de modificação com ls</a></li>
+          <li><a href="#rsync-dry-run">Simulação de transferência sem alterar arquivos (dry-run)</a></li>
+          <li><a href="#ls-data-modificacao">Exibir data de modificação de arquivos com o comando ls</a></li>
           <li><a href="#barra-rsync-scp">Uso da barra no Rsync e SCP</a></li>
           <li><a href="#autenticacao-github">Autenticação no GitHub</a></li>
           <li><a href="#git-inicializacao-remoto">Inicialização e repositório remoto</a></li>
@@ -391,10 +391,10 @@
       <li>
         <a href="#logs-goaccess" class="nav-main">11. Logs, GoAccess e IP real</a>
         <ul class="sub-menu">
-          <li><a href="#capturar-ip-real">IP real no Nginx</a></li>
-          <li><a href="#monitoramento-logs-terminal">Logs pelo terminal</a></li>
-          <li><a href="#exibir-logs-navegador">Logs no navegador</a></li>
-          <li><a href="#painel-goaccess">Painel visual com GoAccess</a></li>
+          <li><a href="#capturar-ip-real">1. Capturar o IP real no Nginx</a></li>
+          <li><a href="#monitoramento-logs-terminal">2. Monitoramento de logs pelo terminal</a></li>
+          <li><a href="#exibir-logs-navegador">3. Exibir logs no navegador</a></li>
+          <li><a href="#painel-goaccess">4. Painel visual interativo com GoAccess</a></li>
         </ul>
       </li>
       <li>
@@ -576,7 +576,7 @@ bundle exec jekyll build</code></pre>
         </li>
       </ul>
 
-      <h3 id="jekyll-32bits">Compatibilidade de Jekyll em arquiteturas 32 bits</h3>
+      <h3 id="jekyll-32bits">Compatibilidade do Jekyll em arquiteturas 32 bits</h3>
       <p>Em sistemas antigos de 32 bits, o pacote <code>sass-embedded</code> (Dart Sass) falha por não possuir binários para 32 bits. A solução é fixar a versão 2.x do conversor no <code>Gemfile</code>:</p>
       <pre><code># No Gemfile:
 gem "jekyll-sass-converter", "~> 2.0"</code></pre>
@@ -599,7 +599,7 @@ sudo apt install imagemagick webp
 convert imagem.jpg -auto-orient -quality 80 -define webp:target-size=1048576 imagem.webp</code></pre>
 
       <div class="callout" style="background-color: #f8fafc; border-left: 4px solid var(--accent-color);">
-        <strong>Atenção para versões antigas:</strong> Em distribuições antigas (como Ubuntu 18.04), use o binário <code>convert</code> no script em vez de <code>magick</code>. Certifique-se de incluir o hífen em <code>"-auto-orient"</code>.
+        <strong>Atenção para versões antigas:</strong> em distribuições antigas (como Ubuntu 18.04), use o binário <code>convert</code> no script em vez de <code>magick</code>. Certifique-se de incluir o hífen em <code>"-auto-orient"</code>.
       </div>
 
       <h3 id="compatibilidade-python">Compatibilidade de scripts no Python 3.6 (subprocess.run)</h3>
@@ -735,17 +735,7 @@ cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
         </li>
       </ol>
 
-      <h3 id="dns-obrigatorio">Rotas DNS obrigatórias (evitar erro NXDOMAIN)</h3>
-      <p>Configurar o subdomínio apenas no arquivo <code>config.yml</code> define o encaminhamento interno da porta, mas <strong>não publica o endereço na internet</strong>. Para que o navegador consiga resolver o endereço, é obrigatório criar o apontamento DNS na Cloudflare:</p>
-      <pre><code>cloudflared tunnel route dns nome-do-tunel subdominio.seu-dominio.com</code></pre>
-      <p>Se você pular esta etapa, ferramentas como o <code>nslookup</code> retornarão o erro <code>NXDOMAIN</code> e o navegador exibirá que o servidor não pôde ser encontrado.</p>
-
-      <h3 id="perigo-reinicio-ssh">Cuidados ao reiniciar o túnel via SSH remoto</h3>
-      <div class="callout callout-warning">
-        <strong>Atenção:</strong> Se a sua conexão SSH ativa passa pelo próprio túnel da Cloudflare (ex: <code>ssh.seu-dominio.com</code>), executar comandos como <code>pkill cloudflared</code> encerra o túnel e derruba a sua própria sessão de forma irrecuperável. Qualquer manutenção no túnel deve ser feita na mesma rede Wi-Fi via IP local ou diretamente no celular.
-      </div>
-
-      <h4>Como desrotear um subdomínio</h4>
+      <h4 id="desrotear-subdominio">Como desrotear um subdomínio</h4>
       <ol>
         <li>No painel da Cloudflare em <strong>DNS &gt; Records</strong>, delete o registro CNAME apontado para o túnel.</li>
         <li>Abra o arquivo <code>~/.cloudflared/config.yml</code> e apague as linhas do subdomínio.</li>
@@ -753,6 +743,16 @@ cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
           <pre><code>pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
         </li>
       </ol>
+
+      <h3 id="dns-obrigatorio">Rotas DNS obrigatórias (evitar erro NXDOMAIN)</h3>
+      <p>Configurar o subdomínio apenas no arquivo <code>config.yml</code> define o encaminhamento interno da porta, mas <strong>não publica o endereço na internet</strong>. Para que o navegador consiga resolver o endereço, é obrigatório criar o apontamento DNS na Cloudflare:</p>
+      <pre><code>cloudflared tunnel route dns nome-do-tunel subdominio.seu-dominio.com</code></pre>
+      <p>Se você pular esta etapa, ferramentas como o <code>nslookup</code> retornarão o erro <code>NXDOMAIN</code> e o navegador exibirá que o servidor não pôde ser encontrado.</p>
+
+      <h3 id="perigo-reinicio-ssh">Cuidados ao reiniciar o túnel via SSH remoto</h3>
+      <div class="callout callout-warning">
+        <strong>Atenção:</strong> se a sua conexão SSH ativa passa pelo próprio túnel da Cloudflare (ex: <code>ssh.seu-dominio.com</code>), executar comandos como <code>pkill cloudflared</code> encerra o túnel e derruba a sua própria sessão de forma irrecuperável. Qualquer manutenção no túnel deve ser feita na mesma rede Wi-Fi via IP local ou diretamente no celular.
+      </div>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
@@ -849,7 +849,7 @@ pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
       <h3 id="ssh-bloqueio-direto">Por que a conexão direta trava</h3>
       <p>Tentar conectar diretamente com <code>ssh usuario@ssh.seu-dominio.com</code> faz o terminal travar sem resposta. Isso acontece porque a Cloudflare intercepta conexões como tráfego HTTP/HTTPS web comum e rejeita conexões diretas em protocolos TCP puros (como a porta 22 ou 8022 do SSH). Para funcionar, o computador precisa do utilitário <code>cloudflared</code> instalado para encapsular a conexão SSH dentro de um canal compatível com o túnel.</p>
 
-      <h3 id="ssh-linux-macos">Conectar a partir de Linux ou macOS</h3>
+      <h3 id="ssh-linux-macos">Conectar a partir do Linux ou macOS</h3>
       <p>Adicione ao arquivo <code>~/.ssh/config</code> do computador:</p>
       <pre><code>Host ssh.seu-dominio.com
   ProxyCommand cloudflared access ssh --hostname %h</code></pre>
@@ -897,10 +897,10 @@ pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
       </ul>
 
       <div class="callout callout-warning">
-        <strong>Atenção ao uso do parâmetro <code>-e</code>:</strong> A opção <code>-e</code> serve estritamente para especificar o comando do protocolo de conexão remota (ex: <code>-e ssh</code> ou <code>-e 'ssh -p 8022'</code>). Colocar o caminho de uma pasta logo após a opção <code>-e</code> (ex: <code>rsync -avz -e pasta/ ...</code>) faz o rsync tentar executar essa pasta como um programa, resultando no erro <code>exec on 'pasta/': Permission denied</code>. Remova a opção <code>-e</code> ou especifique <code>-e ssh</code>.
+        <strong>Atenção ao uso do parâmetro <code>-e</code>:</strong> a opção <code>-e</code> serve estritamente para especificar o comando do protocolo de conexão remota (ex: <code>-e ssh</code> ou <code>-e 'ssh -p 8022'</code>). Colocar o caminho de uma pasta logo após a opção <code>-e</code> (ex: <code>rsync -avz -e pasta/ ...</code>) faz o rsync tentar executar essa pasta como um programa, resultando no erro <code>exec on 'pasta/': Permission denied</code>. Remova a opção <code>-e</code> ou especifique <code>-e ssh</code>.
       </div>
 
-      <h3 id="rsync-dry-run">Simulação de transferência sem alterar arquivos (Dry-Run)</h3>
+      <h3 id="rsync-dry-run">Simulação de transferência sem alterar arquivos (dry-run)</h3>
       <p>Para testar e verificar quais arquivos seriam transferidos sem realizar qualquer modificação real no servidor, adicione a opção <code>-n</code> (ou <code>--dry-run</code>):</p>
       <pre><code>rsync -avzn deepclassicpress/ ssh.gustavoribeiro.net:~/ClassicPress-release-2.7.2/wp-content/themes/gustavoribeiro-net/</code></pre>
       <p>O terminal exibirá a lista completa de arquivos que seriam afetados, permitindo validar os caminhos antes de executar a transferência definitiva.</p>
@@ -946,7 +946,7 @@ scp pasta/* usuario@servidor:/caminho/destino/
 # Se houver subpastas internas (mantém a estrutura interna sem recriar a pasta principal):
 scp -r pasta/* usuario@servidor:/caminho/destino/</code></pre>
       <div class="callout" style="background-color: #f8fafc; border-left: 4px solid var(--accent-color);">
-        <strong>Atenção a arquivos ocultos:</strong> O coringa <code>*</code> ignora arquivos ocultos (que começam com <code>.</code>). Para transferir arquivos ocultos sem duplicar o diretório raiz, o uso do Rsync com barra (<code>rsync -avz pasta/ destino/</code>) é o método mais seguro.
+        <strong>Atenção a arquivos ocultos:</strong> o coringa <code>*</code> ignora arquivos ocultos (que começam com <code>.</code>). Para transferir arquivos ocultos sem duplicar o diretório raiz, o uso do Rsync com barra (<code>rsync -avz pasta/ destino/</code>) é o método mais seguro.
       </div>
 
       <h4>4. A barra na pasta de destino</h4>
@@ -1297,7 +1297,7 @@ pip install -r requirements.txt</code></pre>
           <tr>
             <td><code>Queda do SSH após reiniciar o túnel remotamente</code></td>
             <td>O comando <code>pkill cloudflared</code> encerrou o próprio túnel que mantinha a sessão SSH aberta.</td>
-            <td>Evite reiniciar o túnel por sessões remotas dependentes dele; configure novas rotas pelo painel Web Zero Trust ou use conexão física.</td>
+            <td>Evite reiniciar o túnel por sessões remotas dependentes dele; configure novas rotas pelo painel web Zero Trust ou use conexão física.</td>
           </tr>
           <tr>
             <td><code>Página 404 padrão do Nginx exibida em vez da personalizada</code></td>
