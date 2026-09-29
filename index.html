@@ -296,18 +296,21 @@
     <h2>Tabela de conteúdo</h2>
     <ul>
       <li>
-        <a href="#conexao-ssh" class="nav-main">1. Conexão SSH no Termux</a>
+        <a href="#conexao-ssh" class="nav-main">1. Conexão SSH e chaves</a>
         <ul class="sub-menu">
           <li><a href="#descobrir-usuario">Como descobrir o nome de usuário do Termux</a></li>
           <li><a href="#acesso-computador">Acessar o Termux a partir do computador</a></li>
           <li><a href="#conectar-remoto">Conectar do Termux a um servidor remoto</a></li>
           <li><a href="#finalizar-ssh">Finalizar o serviço SSH</a></li>
+          <li><a href="#gestao-chaves-ssh">Gestão e reuso de chaves SSH</a></li>
+          <li><a href="#adicionar-chave-oracle">Adicionar chave pública na Oracle Cloud</a></li>
         </ul>
       </li>
       <li>
         <a href="#servidores-web" class="nav-main">2. Servidores web (Python e Nginx)</a>
         <ul class="sub-menu">
           <li><a href="#python-http">Servidor HTTP simples em Python</a></li>
+          <li><a href="#persistência-servidor-python">Execução contínua do servidor Python em máquinas virtuais (Oracle Cloud)</a></li>
           <li><a href="#migracao-nginx">Migração para o Nginx (recomendado)</a></li>
           <li><a href="#verificar-portas">Como verificar os servidores e portas em execução</a></li>
         </ul>
@@ -422,7 +425,7 @@
 
     <!-- Seção 1: Conexão SSH -->
     <section id="conexao-ssh" class="wiki-section">
-      <h2>1. Conexão SSH no Termux</h2>
+      <h2>1. Conexão SSH e chaves</h2>
       <p>O OpenSSH permite controlar o terminal do celular remotamente a partir de um computador na mesma rede local ou gerenciar servidores externos direto do celular.</p>
 
       <h3 id="descobrir-usuario">Como descobrir o nome de usuário do Termux</h3>
@@ -462,13 +465,44 @@ ssh usuario@ip_do_servidor -p numero_da_porta</code></pre>
       <p>Para encerrar o servidor SSH no Termux quando terminar:</p>
       <pre><code>pkill sshd</code></pre>
 
+      <h3 id="gestao-chaves-ssh">Gestão e reuso de chaves SSH</h3>
+      <p>Para autenticação SSH, o servidor precisa da sua <strong>chave pública</strong> (normalmente salva com extensão <code>.pub</code>), enquanto a <strong>chave privada</strong> (ex: <code>.pem</code> ou <code>id_rsa</code>) permanece armazenada com o cliente que faz a conexão.</p>
+      <ul>
+        <li><strong>Uso em múltiplos computadores:</strong> é possível copiar e usar a mesma chave privada em vários computadores (via pendrive ou armazenamento seguro). Após copiar, é obrigatório ajustar as permissões no Linux/macOS com <code>chmod 600 ~/.ssh/sua_chave.pem</code> antes de conectar.</li>
+        <li><strong>Boa prática de segurança:</strong> embora reutilizar a chave seja possível, o ideal é criar um par de chaves próprio para cada dispositivo e adicionar as chaves públicas de todos eles no arquivo <code>~/.ssh/authorized_keys</code> do servidor.</li>
+      </ul>
+
+      <h3 id="adicionar-chave-oracle">Adicionar chave pública na Oracle Cloud</h3>
+      <p>Quando precisar adicionar uma nova chave pública a uma instância da Oracle Cloud:</p>
+
+      <h4>Opção A: Se você não possui mais acesso SSH à instância</h4>
+      <ol>
+        <li>No painel da Oracle Cloud, vá em <strong>Compute &gt; Instances</strong> e selecione a instância desejada.</li>
+        <li>Em <strong>Console connection</strong>, crie uma conexão de console serial para acessar o terminal da máquina.</li>
+        <li>Após realizar o login, insira o conteúdo da nova chave pública no arquivo de chaves autorizadas:
+          <pre><code>echo "conteudo-da-sua-chave-publica" &gt;&gt; ~/.ssh/authorized_keys</code></pre>
+        </li>
+      </ol>
+
+      <h4>Opção B: Se você já está conectado ao servidor por outra máquina</h4>
+      <ol>
+        <li>Gere a chave no novo computador local (caso não possua): <code>ssh-keygen -t rsa -b 4096</code></li>
+        <li>Exiba o conteúdo da chave pública local: <code>cat ~/.ssh/id_rsa.pub</code></li>
+        <li>No servidor, abra o arquivo de chaves autorizadas e cole o conteúdo em uma nova linha:
+          <pre><code>nano ~/.ssh/authorized_keys</code></pre>
+        </li>
+        <li>Ajuste as permissões de segurança do arquivo no servidor:
+          <pre><code>chmod 600 ~/.ssh/authorized_keys</code></pre>
+        </li>
+      </ol>
+
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
     <!-- Seção 2: Servidores Web -->
     <section id="servidores-web" class="wiki-section">
       <h2>2. Servidores web (Python e Nginx)</h2>
-      <p>Para hospedar páginas estáticas no celular, você pode utilizar o módulo HTTP nativo do Python para testes ou migrar para o Nginx para maior eficiência de memória e bateria.</p>
+      <p>Para hospedar páginas estáticas no celular ou em máquinas virtuais, você pode utilizar o módulo HTTP nativo do Python para testes ou migrar para o Nginx para maior eficiência de memória e processamento.</p>
 
       <h3 id="python-http">Servidor HTTP simples em Python</h3>
       <p>Adequado para testes rápidos de arquivos em uma pasta:</p>
@@ -478,6 +512,57 @@ python -m http.server 8080 &amp;</code></pre>
       <p>Para manter o servidor Python rodando em segundo plano sem travar o terminal (usando <code>nohup</code>):</p>
       <pre><code>cd ~/gustavoribeiro-net/_site &amp;&amp; nohup python3 -m http.server 8080 &gt; /dev/null 2&gt;&amp;1 &amp;</code></pre>
       <p>Para encerrar o servidor Python executado via <code>nohup</code> ou em segundo plano: <code>pkill -f "http.server"</code>.</p>
+
+      <h3 id="persistência-servidor-python">Execução contínua do servidor Python em máquinas virtuais (Oracle Cloud)</h3>
+      <p>Ao fechar uma sessão SSH em uma VM (Virtual Machine) na Oracle Cloud ou em qualquer servidor Linux, a sessão encerra todos os subprocessos filhos. Para garantir que um servidor web Python continue rodando em segundo plano após desconectar, utilize uma das estratégias abaixo:</p>
+
+      <h4>Opção 1: Usar nohup (simples e rápida)</h4>
+      <p>O <code>nohup</code> ignora o sinal de encerramento da sessão (SIGHUP) enviado quando você sai do terminal:</p>
+      <pre><code>nohup python3 app.py &gt; output.log 2&gt;&amp;1 &amp;</code></pre>
+      <p>Pressione <code>Enter</code> para retornar ao terminal e digite <code>exit</code> para sair de forma segura. Para interromper o servidor posteriormente, consulte o número do processo com <code>pgrep -f app.py</code> e encerre com <code>kill ID_DO_PROCESSO</code>.</p>
+
+      <h4>Opção 2: Usar Tmux (ideal para testes)</h4>
+      <p>Cria uma sessão de terminal virtual independente que continua em execução na máquina virtual:</p>
+      <pre><code># Instalar o Tmux se necessário:
+sudo apt update &amp;&amp; sudo apt install tmux -y
+
+# Criar e acessar a sessão:
+tmux new -s webservice
+
+# Iniciar o servidor Python:
+python3 app.py</code></pre>
+      <p>Para desconectar do terminal mantendo a aplicação rodando, pressione <strong><code>Ctrl + B</code></strong> e depois <strong><code>D</code></strong>. Para reconectar à sessão ao voltar à VM, execute <code>tmux attach -t webservice</code>.</p>
+
+      <h4>Opção 3: Criar um serviço no systemd (recomendado para produção)</h4>
+      <p>A abordagem definitiva para servidores em produção. Torna a aplicação um serviço gerenciado pelo sistema operacional, com suporte a inicialização automática no boot da VM e reinício automático em caso de falhas.</p>
+      <ol>
+        <li>Crie o arquivo de configuração do serviço:
+          <pre><code>sudo nano /etc/systemd/system/meuservidor.service</code></pre>
+        </li>
+        <li>Cole o conteúdo abaixo ajustando o usuário, caminhos e arquivo principal da aplicação:
+          <pre><code>[Unit]
+Description=Servidor Web Python
+After=network.target
+
+[Service]
+User=ubuntu
+WorkingDirectory=/caminho/para/seu/projeto
+ExecStart=/usr/bin/python3 /caminho/para/seu/projeto/app.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target</code></pre>
+        </li>
+        <li>Recarregue o gerenciador do systemd, inicie e ative a inicialização no boot:
+          <pre><code>sudo systemctl daemon-reload
+sudo systemctl start meuservidor
+sudo systemctl enable meuservidor</code></pre>
+        </li>
+      </ol>
+
+      <div class="callout callout-warning">
+        <strong>Atenção com a rede na Oracle Cloud:</strong> além de manter o processo ativo, certifique-se de liberar a porta da sua aplicação no firewall interno do sistema (como <code>iptables</code> ou <code>ufw</code>) e adicionar uma regra de entrada (Ingress Rule) na Security List do painel administrativo da Oracle Cloud.
+      </div>
 
       <h3 id="migracao-nginx">Migração para o Nginx (recomendado)</h3>
       <p>O Nginx consome significativamente menos bateria e memória RAM do que o Python, processa arquivos estáticos com mais agilidade e gerencia cabeçalhos de proxy nativamente.</p>
@@ -1239,6 +1324,16 @@ pip install -r requirements.txt</code></pre>
           </tr>
         </thead>
         <tbody>
+          <tr>
+            <td><code>Aplicação Python para ao fechar a sessão SSH na VM</code></td>
+            <td>A desconexão da sessão encerra os processos vinculados ao terminal.</td>
+            <td>Rode a aplicação com <code>nohup python3 app.py &amp;</code>, execute dentro de uma sessão <code>tmux</code> ou configure um serviço no systemd (<code>/etc/systemd/system/meuservidor.service</code>).</td>
+          </tr>
+          <tr>
+            <td><code>Servidor Python não responde via IP público na Oracle Cloud</code></td>
+            <td>Porta bloqueada no firewall do SO ou nas regras da Security List.</td>
+            <td>Abra a porta utilizada no firewall interno da VM (<code>iptables</code>/<code>ufw</code>) e adicione uma regra de entrada (Ingress Rule) na Security List no painel da Oracle Cloud.</td>
+          </tr>
           <tr>
             <td><code>rsync: error: exec on 'pasta/': Permission denied / unexpected end of file</code></td>
             <td>Uso incorreto da opção <code>-e</code> no rsync passando o caminho de uma pasta em vez do comando remote shell.</td>
