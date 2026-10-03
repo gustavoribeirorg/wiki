@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Wiki: servidor, Termux, Jekyll e Cloudflare Tunnel</title>
+  <title>Wiki técnica: Servidor, Termux, Nginx, PHP/MariaDB, Docker, Jekyll e Cloudflare</title>
   <style>
     :root {
       --bg-color: #f8fafc;
@@ -303,45 +303,71 @@
           <li><a href="#conectar-remoto">Conectar do Termux a um servidor remoto</a></li>
           <li><a href="#finalizar-ssh">Finalizar o serviço SSH</a></li>
           <li><a href="#gestao-chaves-ssh">Gestão e reuso de chaves SSH</a></li>
-          <li><a href="#adicionar-chave-oracle">Adicionar chave pública na Oracle Cloud</a></li>
+          <li><a href="#adicionar-chave-oracle">Acesso SSH e chaves na Oracle Cloud</a></li>
+          <li><a href="#idioma-painel-oracle">Alterar o idioma do console Oracle Cloud</a></li>
         </ul>
       </li>
       <li>
         <a href="#servidores-web" class="nav-main">2. Servidores web (Python e Nginx)</a>
         <ul class="sub-menu">
           <li><a href="#python-http">Servidor HTTP simples em Python</a></li>
-          <li><a href="#persistência-servidor-python">Execução contínua do servidor Python em máquinas virtuais (Oracle Cloud)</a></li>
+          <li><a href="#persistência-servidor-python">Execução contínua em máquinas virtuais (Oracle Cloud)</a></li>
           <li><a href="#migracao-nginx">Migração para o Nginx (recomendado)</a></li>
+          <li><a href="#nginx-root-alias">Diferença entre root e alias no Nginx</a></li>
           <li><a href="#verificar-portas">Como verificar os servidores e portas em execução</a></li>
         </ul>
       </li>
       <li>
-        <a href="#fluxo-jekyll" class="nav-main">3. Compilação e envio do Jekyll</a>
+        <a href="#stack-php-mariadb" class="nav-main">3. MariaDB, PHP e ClassicPress / WordPress</a>
+        <ul class="sub-menu">
+          <li><a href="#mariadb-termux">Instalação e execução do MariaDB no Termux</a></li>
+          <li><a href="#php-fpm-termux">PHP e PHP-FPM no Termux com Nginx</a></li>
+          <li><a href="#certificados-ssl-php">Certificados SSL/TLS para o PHP no Termux</a></li>
+          <li><a href="#imagick-compilacao-termux">Compilação da extensão Imagick via phpize</a></li>
+          <li><a href="#redis-object-cache">Cache de objeto persistente com Redis</a></li>
+          <li><a href="#instalacao-classicpress">Instalação e configuração do ClassicPress</a></li>
+          <li><a href="#migracao-dominio-wordpress">Migração de domínio no ClassicPress / WordPress</a></li>
+          <li><a href="#consultas-sql-mariadb">Consultas SQL úteis e solução de erros MariaDB</a></li>
+          <li><a href="#templates-php-personalizacao">Ajustes em templates PHP e personalização</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#fluxo-jekyll" class="nav-main">4. Compilação e envio do Jekyll</a>
         <ul class="sub-menu">
           <li><a href="#bundler-install">O que é o Bundler e o comando bundle install</a></li>
           <li><a href="#bundle-exec">Para que serve o prefixo bundle exec</a></li>
           <li><a href="#compilacao-site">Como funciona a compilação do site</a></li>
-          <li><a href="#fluxo-transferencia">Fluxo completo de compilação e transferência para o servidor</a></li>
+          <li><a href="#fluxo-transferencia">Fluxo completo de compilação e transferência</a></li>
           <li><a href="#linkagem-jekyll">Linkagem interna no Jekyll</a></li>
           <li><a href="#jekyll-32bits">Compatibilidade do Jekyll em arquiteturas 32 bits</a></li>
+          <li><a href="#redirecionamento-rss">Redirecionamento de RSS do Jekyll para WordPress</a></li>
         </ul>
       </li>
       <li>
-        <a href="#otimizacao-imagens" class="nav-main">4. Imagens e scripts Python</a>
+        <a href="#docker-compose" class="nav-main">5. Docker e Docker Compose em servidores e VMs</a>
+        <ul class="sub-menu">
+          <li><a href="#docker-compose-comandos">Comandos fundamentais do Docker Compose</a></li>
+          <li><a href="#docker-compose-segundo-plano">Execução em segundo plano e persistência (restart)</a></li>
+          <li><a href="#docker-conflito-container">Resolução de conflito de contêiner existente</a></li>
+          <li><a href="#docker-cloudflare-404">Diagnóstico de Erro 404 da Cloudflare em contêineres</a></li>
+        </ul>
+      </li>
+      <li>
+        <a href="#otimizacao-imagens" class="nav-main">6. Imagens e scripts Python</a>
         <ul class="sub-menu">
           <li><a href="#conversao-imagemagick">Conversão com ImageMagick e correção de rotação EXIF</a></li>
           <li><a href="#compatibilidade-python">Compatibilidade de scripts no Python 3.6 (subprocess.run)</a></li>
         </ul>
       </li>
       <li>
-        <a href="#pagina-404" class="nav-main">5. Página 404 personalizada no Nginx</a>
+        <a href="#pagina-404" class="nav-main">7. Página 404 personalizada no Nginx</a>
         <ul class="sub-menu">
           <li><a href="#config-404">Configuração no nginx.conf</a></li>
           <li><a href="#testar-404">Como testar se a página 404 está funcionando</a></li>
         </ul>
       </li>
       <li>
-        <a href="#cloudflare-tunnel" class="nav-main">6. Publicação com Cloudflare Tunnel</a>
+        <a href="#cloudflare-tunnel" class="nav-main">8. Publicação com Cloudflare Tunnel</a>
         <ul class="sub-menu">
           <li><a href="#instalacao-cloudflared">Instalação do cloudflared no cliente (computador)</a></li>
           <li><a href="#instalacao-32bits">Instalação em Linux 32 bits (incompatibilidade i386 vs 386)</a></li>
@@ -354,14 +380,14 @@
         </ul>
       </li>
       <li>
-        <a href="#seguranca-waf" class="nav-main">7. Segurança, WAF e bloqueio de robôs</a>
+        <a href="#seguranca-waf" class="nav-main">9. Segurança, WAF e bloqueio de robôs</a>
         <ul class="sub-menu">
           <li><a href="#bloqueio-cloudflare">Bloqueio na Cloudflare (recomendado para economizar recursos)</a></li>
           <li><a href="#bloqueio-exploits-nginx">Bloqueio de invasões e SQL injection no Nginx</a></li>
         </ul>
       </li>
       <li>
-        <a href="#execucao-continua" class="nav-main">8. Sessões e persistência com Tmux</a>
+        <a href="#execucao-continua" class="nav-main">10. Sessões e persistência com Tmux</a>
         <ul class="sub-menu">
           <li><a href="#evitar-suspensao-android">Evitar a suspensão pelo Android</a></li>
           <li><a href="#gerenciamento-tmux">Gerenciamento de sessões com Tmux</a></li>
@@ -369,7 +395,7 @@
         </ul>
       </li>
       <li>
-        <a href="#ssh-remoto" class="nav-main">9. SSH remoto via Cloudflare</a>
+        <a href="#ssh-remoto" class="nav-main">11. SSH remoto via Cloudflare</a>
         <ul class="sub-menu">
           <li><a href="#ssh-config-servidor">Configuração no servidor (Termux)</a></li>
           <li><a href="#ssh-bloqueio-direto">Por que a conexão direta trava</a></li>
@@ -378,13 +404,13 @@
         </ul>
       </li>
       <li>
-        <a href="#gestao-arquivos-git" class="nav-main">10. Arquivos e Git (SCP, Rsync e fluxo Git)</a>
+        <a href="#gestao-arquivos-git" class="nav-main">12. Arquivos, Rsync e Git (SCP, Rsync e GitHub)</a>
         <ul class="sub-menu">
           <li><a href="#transferencia-rsync">Transferência com Rsync e SCP</a></li>
           <li><a href="#rsync-dry-run">Simulação de transferência sem alterar arquivos (dry-run)</a></li>
           <li><a href="#ls-data-modificacao">Exibir data de modificação de arquivos com o comando ls</a></li>
           <li><a href="#barra-rsync-scp">Uso da barra no Rsync e SCP</a></li>
-          <li><a href="#autenticacao-github">Autenticação no GitHub</a></li>
+          <li><a href="#autenticacao-github">Autenticação e chaves SSH no GitHub</a></li>
           <li><a href="#git-inicializacao-remoto">Inicialização e repositório remoto</a></li>
           <li><a href="#git-fluxo-trabalho">Fluxo de trabalho diário e commits</a></li>
           <li><a href="#git-branches-merge">Gerenciamento de branches e merge</a></li>
@@ -392,7 +418,7 @@
         </ul>
       </li>
       <li>
-        <a href="#logs-goaccess" class="nav-main">11. Logs, GoAccess e IP real</a>
+        <a href="#logs-goaccess" class="nav-main">13. Logs, GoAccess e IP real</a>
         <ul class="sub-menu">
           <li><a href="#capturar-ip-real">1. Capturar o IP real no Nginx</a></li>
           <li><a href="#monitoramento-logs-terminal">2. Monitoramento de logs pelo terminal</a></li>
@@ -401,8 +427,9 @@
         </ul>
       </li>
       <li>
-        <a href="#proot-python-uvicorn" class="nav-main">12. Aplicações Python em proot Debian e Uvicorn</a>
+        <a href="#proot-python-uvicorn" class="nav-main">14. Aplicações Python (Termux, proot Debian e Uvicorn)</a>
         <ul class="sub-menu">
+          <li><a href="#erros-criptografia-python-termux">Erros de compilação e criptografia no Termux nativo</a></li>
           <li><a href="#instalacao-proot">Instalação e acesso ao proot-distro</a></li>
           <li><a href="#docker-limite">Limitações do Docker e proot</a></li>
           <li><a href="#conflito-compilacao">Conflito de compilação (Bionic vs glibc)</a></li>
@@ -411,7 +438,7 @@
         </ul>
       </li>
       <li>
-        <a href="#solucao-problemas" class="nav-main">13. Resolução de problemas</a>
+        <a href="#solucao-problemas" class="nav-main">15. Resolução de problemas</a>
       </li>
     </ul>
   </nav>
@@ -419,8 +446,8 @@
   <!-- Conteúdo principal -->
   <main class="content">
     <header class="wiki-header" id="topo">
-      <h1>Guia técnico de servidor, Termux, Jekyll e Cloudflare Tunnel</h1>
-      <p>Manual prático para hospedagem de sites estáticos no Android, automação de túneis seguros na Cloudflare, compilação com Jekyll, gerenciamento via SSH, controle de versão com Git e sincronização com Rsync.</p>
+      <h1>Guia técnico de servidor, Termux, Nginx, PHP/MariaDB, Docker, Jekyll e Cloudflare</h1>
+      <p>Manual prático para hospedagem estática e dinâmica (Jekyll, ClassicPress/WordPress, FastAPI) no Android com Termux e servidores Linux, orquestração de contêineres com Docker Compose, banco de dados MariaDB, automação de túneis seguros na Cloudflare, gerenciamento via SSH, controle de versão com Git/GitHub e sincronização com Rsync.</p>
     </header>
 
     <!-- Seção 1: Conexão SSH -->
@@ -448,15 +475,13 @@ ip a</code></pre>
         <li>Inicie o serviço do servidor SSH no celular:
           <pre><code>sshd</code></pre>
         </li>
-        <li>No terminal do computador, conecte-se utilizando a porta padrão do Termux (<code>8022</code>) e o usuário identificado com <code>whoami</code>:
-          <pre><code>ssh usuario@IP_DO_CELULAR -p 8022
-# Exemplo:
-ssh u0_a229@192.168.3.33 -p 8022</code></pre>
+        <li>No terminal do computador, conecte-se especificando a porta padrão do Termux (<code>8022</code>):
+          <pre><code>ssh u0_a229@192.168.3.33 -p 8022</code></pre>
         </li>
       </ol>
 
       <h3 id="conectar-remoto">Conectar do Termux a um servidor remoto</h3>
-      <p>Para abrir uma sessão SSH a partir do Termux em direção a outro servidor:</p>
+      <p>Para gerenciar servidores externos diretamente a partir do celular:</p>
       <pre><code>ssh usuario@ip_do_servidor
 # Caso utilize porta personalizada:
 ssh usuario@ip_do_servidor -p numero_da_porta</code></pre>
@@ -468,33 +493,63 @@ ssh usuario@ip_do_servidor -p numero_da_porta</code></pre>
       <h3 id="gestao-chaves-ssh">Gestão e reuso de chaves SSH</h3>
       <p>Para autenticação SSH, o servidor precisa da sua <strong>chave pública</strong> (normalmente salva com extensão <code>.pub</code>), enquanto a <strong>chave privada</strong> (ex: <code>.pem</code> ou <code>id_rsa</code>) permanece armazenada com o cliente que faz a conexão.</p>
       <ul>
-        <li><strong>Uso em múltiplos computadores:</strong> é possível copiar e usar a mesma chave privada em vários computadores (via pendrive ou armazenamento seguro). Após copiar, é obrigatório ajustar as permissões no Linux/macOS com <code>chmod 600 ~/.ssh/sua_chave.pem</code> antes de conectar.</li>
-        <li><strong>Boa prática de segurança:</strong> embora reutilizar a chave seja possível, o ideal é criar um par de chaves próprio para cada dispositivo e adicionar as chaves públicas de todos eles no arquivo <code>~/.ssh/authorized_keys</code> do servidor.</li>
+        <li><strong>Uso em múltiplos computadores:</strong> é possível copiar e usar a mesma chave privada em vários computadores (via pendrive ou armazenamento seguro). Após copiar para a pasta segura (<code>~/.ssh/</code> no Linux/macOS ou <code>C:\Users\seu_usuario\.ssh\</code> no Windows), é obrigatório ajustar as permissões no Linux/macOS com:
+          <pre><code>chmod 600 ~/.ssh/sua_chave.pem</code></pre>
+        </li>
+        <li><strong>Conectar informando o arquivo da chave privada:</strong> utilize o parâmetro <code>-i</code>:
+          <pre><code>ssh -i ~/.ssh/sua_chave.pem usuario@IP_da_instancia</code></pre>
+        </li>
+        <li><strong>Boa prática de segurança:</strong> embora reutilizar a chave seja possível, o ideal é criar um par de chaves próprio para cada dispositivo e adicionar as chaves públicas de todos eles no arquivo <code>~/.ssh/authorized_keys</code> do servidor. Se um dos computadores for extraviado ou comprometido, basta remover a respectiva chave pública do servidor sem afetar os demais acessos.</li>
       </ul>
 
-      <h3 id="adicionar-chave-oracle">Adicionar chave pública na Oracle Cloud</h3>
-      <p>Quando precisar adicionar uma nova chave pública a uma instância da Oracle Cloud:</p>
+      <h3 id="adicionar-chave-oracle">Acesso SSH e chaves na Oracle Cloud</h3>
+      <p>Ao criar uma instância na Oracle Cloud, o painel gera ou solicita uma chave pública. Para fazer login via SSH a partir de um computador, você precisa obrigatoriamente do arquivo da <strong>chave privada</strong> (extensão <code>.pem</code> ou <code>.key</code>), e não apenas da chave pública.</p>
 
-      <h4>Opção A: Se você não possui mais acesso SSH à instância</h4>
+      <h4>Cenário 1: Você está em um computador novo e não possui a chave privada</h4>
+      <ul>
+        <li><strong>Opção 1 (Transferir a chave):</strong> se você ainda possui acesso ao computador original onde a chave privada foi baixada, transfira o arquivo <code>.pem</code> para o computador atual (via pendrive, canal seguro ou e-mail protegido), salve em <code>~/.ssh/</code> e execute <code>chmod 600 ~/.ssh/sua_chave.pem</code>.</li>
+        <li><strong>Opção 2 (Adicionar nova chave pública):</strong> se você não tiver acesso à máquina antiga, gere um novo par de chaves no computador atual com <code>ssh-keygen -t rsa -b 4096</code> e insira a nova chave pública no servidor através do console da Oracle Cloud.</li>
+      </ul>
+
+      <h4>Métodos para inserir a nova chave pública na instância</h4>
+      <p><strong>Método A: Via Console Serial / Cloud-init (Se perdeu totalmente o acesso SSH)</strong></p>
       <ol>
-        <li>No painel da Oracle Cloud, vá em <strong>Compute &gt; Instances</strong> e selecione a instância desejada.</li>
-        <li>Em <strong>Console connection</strong>, crie uma conexão de console serial para acessar o terminal da máquina.</li>
-        <li>Após realizar o login, insira o conteúdo da nova chave pública no arquivo de chaves autorizadas:
-          <pre><code>echo "conteudo-da-sua-chave-publica" &gt;&gt; ~/.ssh/authorized_keys</code></pre>
+        <li>No painel da Oracle Cloud, vá em <strong>Compute &gt; Instances</strong> e selecione a máquina virtual.</li>
+        <li>Em <strong>Console connection</strong>, crie uma conexão de console da instância para abrir o terminal serial diretamente pelo navegador.</li>
+        <li>Alternativamente, verifique em <strong>Instance details</strong> o campo <strong>Cloud-init script</strong> em <em>Metadata</em> se a máquina permitir injeção de scripts na reinicialização.</li>
+        <li>Com a conexão do console serial aberta e após autenticar, adicione a nova chave pública ao arquivo de chaves autorizadas:
+          <pre><code>echo "sua-nova-chave-publica-aqui" &gt;&gt; ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys</code></pre>
         </li>
       </ol>
 
-      <h4>Opção B: Se você já está conectado ao servidor por outra máquina</h4>
+      <p><strong>Método B: Via SSH direto (Se você já está conectado por outra máquina)</strong></p>
       <ol>
-        <li>Gere a chave no novo computador local (caso não possua): <code>ssh-keygen -t rsa -b 4096</code></li>
-        <li>Exiba o conteúdo da chave pública local: <code>cat ~/.ssh/id_rsa.pub</code></li>
-        <li>No servidor, abra o arquivo de chaves autorizadas e cole o conteúdo em uma nova linha:
+        <li>No computador novo, gere o par de chaves se ainda não tiver: <code>ssh-keygen -t rsa -b 4096</code>.</li>
+        <li>Exiba o conteúdo da chave pública recém-criada: <code>cat ~/.ssh/id_rsa.pub</code>.</li>
+        <li>No terminal da máquina que já possui acesso ao servidor Oracle, abra o arquivo:
           <pre><code>nano ~/.ssh/authorized_keys</code></pre>
         </li>
-        <li>Ajuste as permissões de segurança do arquivo no servidor:
+        <li>Cole o conteúdo da nova chave pública em uma linha ao final do arquivo, salve (Ctrl+O, Enter, Ctrl+X) e garanta as permissões:
           <pre><code>chmod 600 ~/.ssh/authorized_keys</code></pre>
         </li>
+        <li>Teste o acesso a partir do novo computador: <code>ssh usuario@IP_do_servidor</code>.</li>
       </ol>
+
+      <h3 id="idioma-painel-oracle">Alterar o idioma do console Oracle Cloud</h3>
+      <p>Se o painel administrativo da Oracle Cloud estiver em inglês ou você desejar alternar para português (ou vice-versa):</p>
+      <ul>
+        <li><strong>Passo a passo em Português:</strong>
+          <ol>
+            <li>No canto superior direito da tela, clique no <strong>ícone de perfil</strong> (menu do usuário).</li>
+            <li>Selecione <strong>My profile</strong> (ou <strong>User settings</strong>).</li>
+            <li>Na seção de preferências (<strong>Preferences</strong>), localize o campo <strong>Language</strong> (ou <strong>Console language</strong>).</li>
+            <li>Selecione <strong>Português (Brasil)</strong> ou o idioma desejado no menu suspenso.</li>
+            <li>Salve as alterações ou recarregue a página para aplicar.</li>
+          </ol>
+        </li>
+        <li><strong>Steps in English:</strong> Click the Profile icon in the top-right corner &gt; Select <em>User settings</em> (or <em>My profile</em>) &gt; Scroll to <em>Preferences</em> &gt; Under <em>Language</em>, select <em>English</em> &gt; Save and refresh.</li>
+      </ul>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
@@ -596,6 +651,60 @@ nginx -s reload
 # Parar o serviço:
 nginx -s stop</code></pre>
 
+      <h3 id="nginx-root-alias">Diferença entre root e alias no Nginx</h3>
+      <p>A diferença essencial entre <code>root</code> e <code>alias</code> está na forma como o Nginx constrói o caminho final do arquivo no disco do servidor:</p>
+      <ul>
+        <li><strong>Diretiva <code>root</code>:</strong> anexa todo o caminho da URL solicitada ao diretório base configurado.</li>
+        <li><strong>Diretiva <code>alias</code>:</strong> substitui o trecho da diretiva <code>location</code> pelo caminho configurado no disco.</li>
+      </ul>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Diretiva</th>
+            <th>Exemplo de configuração</th>
+            <th>Requisição recebida</th>
+            <th>Caminho final buscado no disco</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>root</strong></td>
+            <td><code>location /imagens/ { root /var/www/site; }</code></td>
+            <td><code>/imagens/foto.png</code></td>
+            <td><code>/var/www/site/imagens/foto.png</code></td>
+          </tr>
+          <tr>
+            <td><strong>alias</strong></td>
+            <td><code>location /imagens/ { alias /var/www/site/; }</code></td>
+            <td><code>/imagens/foto.png</code></td>
+            <td><code>/var/www/site/foto.png</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warning">
+        <strong>Atenção à barra no alias:</strong> ao configurar a diretiva <code>alias</code>, inclua sempre a barra final (<code>/</code>) tanto no bloco <code>location /pasta/</code> quanto no caminho de destino (<code>alias /caminho/pasta/;</code>) para evitar erros de concatenação de arquivos.
+      </div>
+
+      <h4>Exemplo prático: site principal com subpasta de Wiki isolada</h4>
+      <pre><code># Raiz do site principal
+location / {
+    root  /data/data/com.termux/files/home/gustavoribeiro-net/_site;
+    index index.html index.htm;
+}
+
+# Subpasta independente usando alias para pasta separada no disco
+location /wiki/ {
+    alias /data/data/com.termux/files/home/wiki/;
+    index index.html index.htm;
+}
+
+# Redirecionamento permanente para garantir a barra no final
+location = /wiki {
+    return 301 /wiki/;
+}</code></pre>
+
       <h3 id="verificar-portas">Como verificar os servidores e portas em execução</h3>
       <ul>
         <li><strong>Verificar processos ativos:</strong> <code>ps aux | grep nginx</code> ou <code>ps aux | grep python</code>.</li>
@@ -606,9 +715,271 @@ nginx -s stop</code></pre>
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 3: Compilação e envio do Jekyll -->
+    <!-- Seção 3: MariaDB, PHP e ClassicPress / WordPress -->
+    <section id="stack-php-mariadb" class="wiki-section">
+      <h2>3. MariaDB, PHP e ClassicPress / WordPress no Termux</h2>
+      <p>Guia completo para hospedar aplicações dinâmicas baseadas em PHP (como ClassicPress e WordPress) e gerenciar bancos de dados relacionais MariaDB diretamente no Android através do Termux.</p>
+
+      <h3 id="mariadb-termux">Instalação e execução do MariaDB no Termux</h3>
+      <p>O MariaDB pode ser executado localmente no Android sem necessidade de root. No Termux, há uma distinção fundamental entre os comandos:</p>
+      <ul>
+        <li><strong><code>mariadbd-safe</code> (Servidor):</strong> processo do daemon que inicia e mantém o serviço do banco de dados rodando em segundo plano, monitorando o processo para reinício automático em caso de encerramento inesperado.</li>
+        <li><strong><code>mariadb</code> (Cliente):</strong> utilitário de terminal para se conectar interativamente ao servidor que já está ativo e executar consultas SQL.</li>
+      </ul>
+
+      <h4>1. Instalar os pacotes</h4>
+      <pre><code>pkg update &amp;&amp; pkg install mariadb php -y</code></pre>
+
+      <h4>2. Iniciar o servidor MariaDB em segundo plano</h4>
+      <pre><code>mariadbd-safe &amp;</code></pre>
+      <p>Para confirmar se o processo está em execução: <code>pgrep mariadbd</code> (deve retornar o ID numérico do processo).</p>
+
+      <h4>3. Criar banco de dados, usuário e conceder privilégios</h4>
+      <ol>
+        <li>Acesse o console do MariaDB como administrador (sem senha inicialmente):
+          <pre><code>mariadb -u root</code></pre>
+          <p>O prompt mudará para <code>MariaDB [(none)]&gt;</code>.</p>
+        </li>
+        <li>Execute as instruções SQL para criar o banco de dados e o usuário com permissões completas:
+          <pre><code>CREATE DATABASE meu_banco;
+CREATE USER 'meu_usuario'@'localhost' IDENTIFIED BY 'sua_senha_segura';
+GRANT ALL PRIVILEGES ON meu_banco.* TO 'meu_usuario'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;</code></pre>
+        </li>
+        <li>Teste o acesso com o novo usuário criado:
+          <pre><code>mariadb -u meu_usuario -p meu_banco</code></pre>
+          <p>Digite a senha quando solicitada. O prompt abrirá diretamente em <code>MariaDB [meu_banco]&gt;</code>.</p>
+        </li>
+      </ol>
+
+      <h4>4. Solução: "A mysqld process already exists" ou travamento de inicialização</h4>
+      <p>Se o comando <code>mariadbd-safe &amp;</code> fechar com erro indicando que o processo já existe, ou se o serviço cair de forma abrupta mantendo arquivos de trava (.pid) presos no disco:</p>
+      <pre><code># Encerra qualquer instância presa:
+killall -9 mysqld 2&gt;/dev/null
+
+# Remove o arquivo PID retido:
+rm -f $PREFIX/var/lib/mysql/*.pid
+
+# Reinicia o servidor:
+mariadbd-safe &amp;</code></pre>
+
+      <h3 id="php-fpm-termux">PHP e PHP-FPM no Termux com Nginx</h3>
+      <p>Para processar requisições dinâmicas no Nginx, o PHP deve rodar através do gerenciador de processos <strong>PHP-FPM</strong>. No Termux, o PHP-FPM vem configurado por padrão para escutar em um <strong>Unix Socket</strong> local (<code>php-fpm.sock</code>), e não na porta de rede TCP 9000.</p>
+
+      <h4>1. Iniciar o PHP-FPM</h4>
+      <pre><code>php-fpm</code></pre>
+      <p>O comando roda em segundo plano automaticamente. Verifique se o processo está ativo com <code>pgrep php-fpm</code>.</p>
+
+      <h4>2. Configurar o bloco PHP no Nginx (nginx.conf)</h4>
+      <p>Adicione o bloco <code>location ~ \.php$</code> dentro do seu bloco <code>server { ... }</code>:</p>
+      <pre><code>location ~ \.php$ {
+    fastcgi_pass unix:/data/data/com.termux/files/usr/var/run/php-fpm.sock;
+    fastcgi_index index.php;
+    include fastcgi_params;
+    fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+}</code></pre>
+      <p>Valide a sintaxe com <code>nginx -t</code> e recarregue com <code>nginx -s reload</code>.</p>
+
+      <h4>3. Solução de falhas comuns no PHP-FPM (Termux)</h4>
+      <ul>
+        <li><strong>Diretório de execução ausente:</strong> se o PHP-FPM fechar imediatamente, crie o diretório de sockets:
+          <pre><code>mkdir -p $PREFIX/var/run</code></pre>
+        </li>
+        <li><strong>Diagnóstico em primeiro plano:</strong> para ver o log exato do erro na tela:
+          <pre><code>php-fpm -F</code></pre>
+        </li>
+        <li><strong>Erro "Another FPM instance seems to already listen on php-fpm.sock":</strong> indica que o socket ficou preso da execução anterior:
+          <pre><code>rm -f $PREFIX/var/run/php-fpm.sock &amp;&amp; php-fpm</code></pre>
+        </li>
+        <li><strong>Erro "Bad system call" ao usar pkill:</strong> as restrições do kernel Android no Termux barram o comando <code>pkill</code>. Encerre os processos usando o comando <code>kill</code> clássico:
+          <pre><code>kill -9 $(pgrep php-fpm)
+# ou
+killall php-fpm</code></pre>
+        </li>
+        <li><strong>Porta 8080 em conflito (Address already in use):</strong> se você tentar iniciar o PHP embutido (<code>php -S localhost:8080</code>) e a porta estiver ocupada pelo Nginx, use outra porta (<code>php -S localhost:8081</code>) ou identifique o processo ativo com <code>lsof -i :8080</code>.</li>
+      </ul>
+
+      <h3 id="certificados-ssl-php">Certificados SSL/TLS para o PHP no Termux</h3>
+      <p>Ao realizar requisições HTTPS externas (por exemplo, quando o WordPress/ClassicPress tenta verificar atualizações no repositório de plugins ou quando o cURL faz chamadas para APIs), o PHP pode disparar avisos como <em>"O ClassicPress não conseguiu estabelecer uma conexão segura com o WordPress.org"</em> ou erros de cURL 60 (SSL certificate problem).</p>
+
+      <p>Isso acontece porque o PHP do Termux não localiza os certificados raiz padrão do sistema. Para resolver:</p>
+      <ol>
+        <li>Instale o pacote de certificados de autoridade:
+          <pre><code>pkg update &amp;&amp; pkg install ca-certificates -y</code></pre>
+        </li>
+        <li>Crie um arquivo de configuração específico em <code>$PREFIX/etc/php/conf.d/cacert.ini</code> (pasta onde o PHP do Termux carrega diretivas complementares automaticamente):
+          <pre><code>echo 'curl.cainfo = "/data/data/com.termux/files/usr/etc/tls/cert.pem"' &gt; $PREFIX/etc/php/conf.d/cacert.ini
+echo 'openssl.cafile = "/data/data/com.termux/files/usr/etc/tls/cert.pem"' &gt;&gt; $PREFIX/etc/php/conf.d/cacert.ini</code></pre>
+        </li>
+        <li>Reinicie o PHP-FPM para aplicar as diretivas:
+          <pre><code>killall php-fpm &amp;&amp; rm -f $PREFIX/var/run/php-fpm.sock &amp;&amp; php-fpm</code></pre>
+        </li>
+      </ol>
+
+      <h3 id="imagick-compilacao-termux">Compilação da extensão Imagick via phpize</h3>
+      <p>A biblioteca <code>Imagick</code> oferece recursos avançados de processamento de imagens para o PHP. Como o comando <code>pecl</code> e o pacote <code>php-pear</code> não existem nos repositórios oficiais do Termux (retornando <em>Unable to locate package php-pear</em>), a extensão deve ser compilada a partir do código-fonte utilizando o <code>phpize</code>:</p>
+
+      <ol>
+        <li>Instale as bibliotecas do ImageMagick e o conjunto de compiladores:
+          <pre><code>pkg install imagemagick clang make autoconf pkg-config git -y</code></pre>
+        </li>
+        <li>Clone o repositório oficial do Imagick e compile o módulo:
+          <pre><code>git clone https://github.com/Imagick/imagick.git
+cd imagick
+phpize
+./configure
+make
+make install</code></pre>
+        </li>
+        <li>Ative a extensão gerada nas configurações do PHP:
+          <pre><code>echo 'extension=imagick.so' &gt; $PREFIX/etc/php/conf.d/imagick.ini</code></pre>
+        </li>
+        <li>Reinicie o PHP-FPM e valide se o módulo está carregado:
+          <pre><code>killall php-fpm &amp;&amp; rm -f $PREFIX/var/run/php-fpm.sock &amp;&amp; php-fpm
+php -m | grep imagick</code></pre>
+        </li>
+      </ol>
+
+      <h3 id="redis-object-cache">Cache de objeto persistente com Redis</h3>
+      <p>O <strong>cache de objeto persistente</strong> armazena consultas do banco de dados na memória RAM entre os acessos das páginas. Em vez de o CMS consultar o MariaDB a cada requisição, ele recupera as consultas prontas da memória, acelerando consideravelmente o tempo de resposta.</p>
+
+      <ol>
+        <li>No Termux, instale o servidor Redis e a extensão PHP correspondente:
+          <pre><code>pkg update &amp;&amp; pkg install redis php-redis -y</code></pre>
+        </li>
+        <li>Inicie o serviço do Redis em segundo plano:
+          <pre><code>redis-server --daemonize yes</code></pre>
+        </li>
+        <li>Valide a execução com um teste de ping:
+          <pre><code>redis-cli ping</code></pre>
+          <p>O retorno deve ser <strong><code>PONG</code></strong>.</p>
+        </li>
+        <li>No painel do ClassicPress / WordPress, instale o plugin <strong>Redis Object Cache</strong> e clique em <strong>Habilitar Cache de Objeto</strong>. Ele se conectará automaticamente ao host local <code>127.0.0.1:6379</code>.</li>
+      </ol>
+
+      <h3 id="instalacao-classicpress">Instalação e configuração do ClassicPress</h3>
+      <p>O ClassicPress é um fork focado em estabilidade, velocidade e suporte a PHP clássico sem o editor de blocos pesado.</p>
+
+      <ol>
+        <li>Acesse o diretório onde o site será hospedado e extraia os arquivos:
+          <pre><code>curl -LO https://www.classicpress.net/latest.zip
+unzip latest.zip</code></pre>
+        </li>
+        <li>Configure o arquivo <code>wp-config.php</code>:
+          <pre><code>cp wp-config-sample.php wp-config.php
+nano wp-config.php</code></pre>
+        </li>
+        <li>Preencha as credenciais do MariaDB:
+          <pre><code>define( 'DB_NAME', 'meu_banco' );
+define( 'DB_USER', 'meu_usuario' );
+define( 'DB_PASSWORD', 'sua_senha_segura' );
+define( 'DB_HOST', '127.0.0.1' );</code></pre>
+          <div class="callout callout-warning">
+            <strong>Atenção obrigatória com DB_HOST no Termux:</strong> configure sempre <code>define( 'DB_HOST', '127.0.0.1' );</code> em vez de <code>localhost</code>. No Android, usar <code>localhost</code> faz o PHP procurar o socket Unix padrão do MySQL que frequentemente não está disponível no caminho tradicional do Linux, gerando o erro <em>Error establishing a database connection</em>.
+          </div>
+        </li>
+        <li>Abra o navegador no endereço do seu servidor local (ex: <code>http://localhost:8080</code>) e conclua a instalação administrativa.</li>
+      </ol>
+
+      <h3 id="migracao-dominio-wordpress">Migração de domínio no ClassicPress / WordPress</h3>
+      <p>Ao migrar de um domínio de desenvolvimento (ex: <code>classicpress.gustavoribeiro.net</code>) para o domínio definitivo de produção (ex: <code>gustavoribeiro.net</code>), o site pode falhar ao carregar folhas de estilo CSS, scripts JS e imagens, gerando erros como <code>NS_ERROR_DOM_NETWORK_ERR</code> e avisos como <em>"A resource is blocked by OpaqueResponseBlocking"</em> no console do navegador.</p>
+      <p>Isso acontece porque o banco de dados armazena URLs absolutas que continuam apontando para o endereço antigo. Siga os três passos para regularizar:</p>
+
+      <h4>Passo 1: Forçar as URLs no wp-config.php (Correção Imediata)</h4>
+      <p>Insira no <code>wp-config.php</code> antes da linha <code>/* That's all, stop editing! */</code>:</p>
+      <pre><code>define( 'WP_HOME', 'https://gustavoribeiro.net' );
+define( 'WP_SITEURL', 'https://gustavoribeiro.net' );</code></pre>
+      <p>Isso força o carregamento imediato do tema e dos scripts JS essenciais pelo domínio correto.</p>
+
+      <h4>Passo 2: Substituir as URLs antigas no Banco de Dados</h4>
+      <p>Para corrigir links internos e caminhos de imagens em posts e opções, utilize um dos métodos de Search &amp; Replace:</p>
+      <ul>
+        <li><strong>Via WP-CLI (Terminal):</strong>
+          <pre><code>wp search-replace 'https://classicpress.gustavoribeiro.net' 'https://gustavoribeiro.net' --all-tables</code></pre>
+        </li>
+        <li><strong>Via Plugin (Painel Web):</strong> instale o plugin <strong>Better Search Replace</strong>, informe a URL antiga e a nova, selecione todas as tabelas (especialmente <code>cp_posts</code> e <code>cp_options</code>) e execute a alteração.</li>
+        <li><strong>Via comandos SQL no MariaDB:</strong>
+          <pre><code>UPDATE cp_options SET option_value = 'https://gustavoribeiro.net' WHERE option_name IN ('siteurl', 'home');
+UPDATE cp_posts SET post_content = REPLACE(post_content, 'https://classicpress.gustavoribeiro.net', 'https://gustavoribeiro.net');
+UPDATE cp_posts SET guid = REPLACE(guid, 'https://classicpress.gustavoribeiro.net', 'https://gustavoribeiro.net');</code></pre>
+        </li>
+      </ul>
+
+      <h4>Passo 3: Limpeza completa de caches</h4>
+      <p>Limpe o cache do navegador com <code>Ctrl + F5</code> (ou <code>Cmd + Shift + R</code> no Mac), purge o cache da Cloudflare se o domínio estiver atrás de proxy e limpe os plugins de cache do CMS.</p>
+
+      <h3 id="consultas-sql-mariadb">Consultas SQL úteis e solução de erros MariaDB</h3>
+      <h4>1. Pesquisar posts contendo tags HTML (ex: &lt;br&gt;)</h4>
+      <pre><code>SELECT ID, post_title, post_content 
+FROM cp_posts 
+WHERE post_content LIKE '%&lt;br%';</code></pre>
+
+      <h4>2. Erro "ERROR 1046 (3D000): No database selected"</h4>
+      <p>Ocorre ao tentar executar comandos SQL sem selecionar previamente a base de dados ativa (indicado por <code>[(none)]</code> no prompt). Selecione com:</p>
+      <pre><code>SHOW DATABASES;
+USE nome_do_banco;</code></pre>
+
+      <h4>3. Banco de dados não aparece no SHOW DATABASES</h4>
+      <p>Se ao listar os bancos aparecerem apenas <code>information_schema</code> e <code>test</code>, você se conectou ao MariaDB com um usuário anônimo ou sem privilégios. Verifique os dados em <code>wp-config.php</code> e conecte-se com o usuário correto:</p>
+      <pre><code>mysql -u SEU_USUARIO -p
+# Digite a senha cadastrada</code></pre>
+
+      <h3 id="templates-php-personalizacao">Ajustes em templates PHP e personalização</h3>
+      <h4>1. Correção de erros de sintaxe em loops de posts (archive.php e search.php)</h4>
+      <p>Erros como <em>Parse error: syntax error, unexpected token "&lt;", expecting "elseif" or "else" or "endif"</em> acontecem quando tags <code>&lt;?php</code> são abertas consecutivamente sem fechar os blocos anteriores, ou quando instruções condicionais (como <code>else :</code>) ficam soltas fora das tags PHP ao intercalar código com HTML ou <code>&lt;noscript&gt;</code>.</p>
+      <p>Estrutura correta de template:</p>
+      <pre><code>&lt;?php if ( have_posts() ) : ?&gt;
+    &lt;?php
+    while ( have_posts() ) :
+        the_post();
+        get_template_part( 'template-parts/content', get_post_type() );
+    endwhile;
+    ?&gt;
+    &lt;noscript&gt;
+        &lt;?php the_posts_pagination( array( 'mid_size' =&gt; 1 ) ); ?&gt;
+    &lt;/noscript&gt;
+&lt;?php else : ?&gt;
+    &lt;article class="no-results"&gt;
+        &lt;p&gt;&lt;?php esc_html_e( 'Nada encontrado.', 'the-theme' ); ?&gt;&lt;/p&gt;
+    &lt;/article&gt;
+&lt;?php endif; ?&gt;</code></pre>
+
+      <h4>2. Listar Páginas na barra lateral fora de Categorias</h4>
+      <p>Para exibir uma listagem de páginas institucionais reaproveitando a formatação CSS da barra lateral:</p>
+      <pre><code>&lt;?php
+$pages = get_pages();
+$current_page_id = get_queried_object_id();
+?&gt;
+&lt;?php if ( ! empty( $pages ) ) : ?&gt;
+    &lt;span class="sidebar-title"&gt;&lt;?php esc_html_e( 'Páginas', 'the-theme' ); ?&gt;&lt;/span&gt;
+    &lt;ul class="category-list"&gt;
+        &lt;?php foreach ( $pages as $page ) : ?&gt;
+            &lt;li&gt;
+                &lt;a class="category-link&lt;?php echo ( (int) $page-&gt;ID === (int) $current_page_id ) ? ' active' : ''; ?&gt;"
+                   href="&lt;?php echo esc_url( get_permalink( $page-&gt;ID ) ); ?&gt;"&gt;
+                    &lt;?php echo esc_html( $page-&gt;post_title ); ?&gt;
+                &lt;/a&gt;
+            &lt;/li&gt;
+        &lt;?php endforeach; ?&gt;
+    &lt;/ul&gt;
+&lt;?php endif; ?&gt;</code></pre>
+
+      <h4>3. Assunto dinâmico em links de e-mail (mailto) com título do post</h4>
+      <p>Para incluir o título do artigo no assunto do link <code>mailto</code> sem que acentos ou espaços quebrem o link, utilize <code>get_the_title()</code> combinado com <code>rawurlencode()</code>:</p>
+      <pre><code>&lt;address&gt;
+  &lt;p&gt;
+    Você pode responder a esta publicação por
+    &lt;a href="mailto:contato@seusite.com?subject=&lt;?php echo rawurlencode( 'Re: ' . get_the_title() ); ?&gt;"&gt;e-mail.&lt;/a&gt;
+  &lt;/p&gt;
+&lt;/address&gt;</code></pre>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 4: Compilação e envio do Jekyll -->
     <section id="fluxo-jekyll" class="wiki-section">
-      <h2>3. Compilação e envio do Jekyll</h2>
+      <h2>4. Compilação e envio do Jekyll</h2>
       <p>O Jekyll é um gerador de sites estáticos que transforma arquivos em Markdown, layouts em Liquid e folhas de estilo Sass em páginas HTML prontas para publicação.</p>
 
       <h3 id="bundler-install">O que é o Bundler e o comando bundle install</h3>
@@ -667,76 +1038,247 @@ bundle exec jekyll build</code></pre>
 gem "jekyll-sass-converter", "~> 2.0"</code></pre>
       <p>Em seguida, atualize o pacote com o Bundler: <code>bundle update jekyll-sass-converter &amp;&amp; bundle install</code>.</p>
 
-      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
-    </section>
+      <h3 id="redirecionamento-rss">Redirecionamento de RSS do Jekyll para WordPress</h3>
+      <p>Ao migrar um blog do Jekyll para WordPress / ClassicPress, o endereço do feed RSS normalmente muda (por exemplo, de <code>/blog/rss.xml</code> para <code>/feed/</code>). Para não perder leitores e agregadores de conteúdo, configure um redirecionamento HTTP 301 (permanente):</p>
 
-    <!-- Seção 4: Otimização de imagens e scripts Python -->
-    <section id="otimizacao-imagens" class="wiki-section">
-      <h2>4. Imagens e scripts Python</h2>
-      <p>Boas práticas e correções para conversão de mídia e execução de scripts de automação em ambientes legados.</p>
+      <h4>Opções de implementação:</h4>
+      <ul>
+        <li><strong>Via Nginx:</strong> adicione a seguinte linha no bloco <code>server { ... }</code> do seu domínio:
+          <pre><code>rewrite ^/blog/rss\.xml$ /feed/ permanent;</code></pre>
+        </li>
+        <li><strong>Via Apache (.htaccess):</strong> adicione no início do arquivo:
+          <pre><code>Redirect 301 /blog/rss.xml https://seusite.com/feed/</code></pre>
+        </li>
+        <li><strong>Via Plugin no WordPress:</strong> instale o plugin <strong>Redirection</strong> e crie uma rota com Origem <code>/blog/rss.xml</code>, Destino <code>/feed/</code> e Código 301.</li>
+        <li><strong>Via Cloudflare:</strong> crie uma regra em <strong>Rules &gt; Redirect Rules</strong> apontando a URL antiga para a nova.</li>
+      </ul>
 
-      <h3 id="conversao-imagemagick">Conversão com ImageMagick e correção de rotação EXIF</h3>
-      <p>Fotos tiradas em smartphones podem ser salvas com orientação rotacionada nos metadados. O parâmetro <code>-auto-orient</code> lê os dados EXIF, gira a imagem fisicamente e remove a marcação para gerar arquivos WebP perfeitamente alinhados:</p>
-      <pre><code># Instalação:
-sudo apt install imagemagick webp
-
-# Comando direto de conversão com qualidade e orientação corrigidas:
-convert imagem.jpg -auto-orient -quality 80 -define webp:target-size=1048576 imagem.webp</code></pre>
-
-      <div class="callout" style="background-color: #f8fafc; border-left: 4px solid var(--accent-color);">
-        <strong>Atenção para versões antigas:</strong> em distribuições antigas (como Ubuntu 18.04), use o binário <code>convert</code> no script em vez de <code>magick</code>. Certifique-se de incluir o hífen em <code>"-auto-orient"</code>.
+      <div class="callout callout-warning">
+        <strong>Se o redirecionamento resultar em erro 404:</strong>
+        <ol>
+          <li>Certifique-se de que os <strong>Links Permanentes</strong> estão configurados no painel do WordPress em <em>Configurações &gt; Links permanentes</em> (escolha "Nome do artigo").</li>
+          <li>No Nginx, garanta que a rota raiz possui a diretiva <code>try_files $uri $uri/ /index.php?$args;</code>.</li>
+          <li>Como alternativa direta sem links permanentes amigáveis, redirecione para o parâmetro nativo do feed:
+            <pre><code>rewrite ^/blog/rss\.xml$ /?feed=rss2 permanent;</code></pre>
+          </li>
+        </ol>
       </div>
 
-      <h3 id="compatibilidade-python">Compatibilidade de scripts no Python 3.6 (subprocess.run)</h3>
-      <p>O argumento <code>capture_output=True</code> só existe a partir do Python 3.7. Para scripts rodando no Python 3.6, substitua a chamada:</p>
-      <pre><code># Em vez de: subprocess.run(cmd, capture_output=True, text=True)
-# Utilize a sintaxe compatível com Python 3.6:
-result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)</code></pre>
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 5: Docker e Docker Compose -->
+    <section id="docker-compose" class="wiki-section">
+      <h2>5. Docker e Docker Compose em servidores e VMs</h2>
+      <p>Instruções para orquestração de contêineres com Docker Compose em máquinas virtuais Linux (Oracle Cloud, Ubuntu Server e Debian), execução contínua em segundo plano, persistência automática e resolução de conflitos.</p>
+
+      <h3 id="docker-compose-comandos">Comandos fundamentais do Docker Compose</h3>
+      <p>Navegue até a pasta onde está localizado o arquivo <code>compose.yaml</code> (ou <code>docker-compose.yml</code>) para executar os comandos:</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Comando</th>
+            <th>Finalidade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>docker compose up</code></td>
+            <td>Inicia os serviços exibindo a saída dos logs diretamente na janela do terminal (primeiro plano).</td>
+          </tr>
+          <tr>
+            <td><code>docker compose up -d</code></td>
+            <td><strong>Modo detached (segundo plano):</strong> inicia os contêineres e libera o terminal imediatamente.</td>
+          </tr>
+          <tr>
+            <td><code>docker compose up -d --build</code></td>
+            <td>Recompila as imagens locais modificadas antes de subir os contêineres em segundo plano.</td>
+          </tr>
+          <tr>
+            <td><code>docker compose ps</code></td>
+            <td>Lista o status dos contêineres do projeto (em execução, parados ou reiniciando).</td>
+          </tr>
+          <tr>
+            <td><code>docker compose logs</code></td>
+            <td>Exibe o histórico recente dos logs de execução de todos os serviços.</td>
+          </tr>
+          <tr>
+            <td><code>docker compose logs -f</code></td>
+            <td>Acompanha os logs em tempo real (follow mode). Use <code>Ctrl + C</code> para sair sem parar o serviço.</td>
+          </tr>
+          <tr>
+            <td><code>docker compose down</code></td>
+            <td>Para e remove os contêineres e redes criados pelo projeto.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 id="docker-compose-segundo-plano">Execução em segundo plano e persistência (restart)</h3>
+      <p>Ao utilizar o parâmetro <code>-d</code> (detached mode), os contêineres continuam em execução contínua no daemon do Docker mesmo se você fechar o terminal ou desconectar da sessão SSH.</p>
+
+      <h4>Como fazer o contêiner reiniciar sozinho após o reboot do servidor:</h4>
+      <p>No arquivo <code>compose.yaml</code>, defina a propriedade <code>restart</code> no bloco de cada serviço:</p>
+      <pre><code>services:
+  meu_servico:
+    image: nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"</code></pre>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Opção de restart</th>
+            <th>Comportamento</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>unless-stopped</strong></td>
+            <td>Inicia automaticamente com o sistema operacional, a menos que você tenha parado o contêiner manualmente antes da reinicialização (<strong>recomendado</strong>).</td>
+          </tr>
+          <tr>
+            <td><strong>always</strong></td>
+            <td>Sempre reinicia o contêiner quando o sistema liga ou se o serviço cair por qualquer motivo.</td>
+          </tr>
+          <tr>
+            <td><strong>on-failure</strong></td>
+            <td>Reinicia apenas se o contêiner fechar com código de erro diferente de 0.</td>
+          </tr>
+          <tr>
+            <td><strong>no</strong></td>
+            <td>Não reinicia automaticamente (comportamento padrão).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="callout callout-warning">
+        <strong>Habilitar o Docker no boot do sistema:</strong> para que as diretivas de <code>restart</code> funcionem após a reinicialização da máquina, certifique-se de que o próprio daemon do Docker está habilitado no systemd do Linux:
+        <pre><code>sudo systemctl enable docker</code></pre>
+      </div>
+
+      <h3 id="docker-conflito-container">Resolução de conflito de contêiner existente</h3>
+      <p>Se ao executar <code>docker compose up -d</code> o terminal retornar o erro:</p>
+      <pre><code>Error response from daemon: Conflict. The container name "/meu-app" is already in use by container "...". You have to remove (or rename) that container to be able to reuse that name.</code></pre>
+
+      <p>Isso acontece porque um contêiner anterior com o mesmo nome permaneceu registrado no Docker (ativo ou encerrado com falha). Para resolver:</p>
+      <ol>
+        <li>Force a remoção do contêiner conflitante:
+          <pre><code>sudo docker rm -f meu-app</code></pre>
+        </li>
+        <li>Confirme que o nome foi liberado:
+          <pre><code>sudo docker ps -a | grep meu-app</code></pre>
+          <p>O comando não deve retornar nenhuma linha.</p>
+        </li>
+        <li>Suba o serviço novamente com rebuild:
+          <pre><code>sudo docker compose up -d --build
+sudo docker compose ps</code></pre>
+        </li>
+      </ol>
+
+      <h3 id="docker-cloudflare-404">Diagnóstico de Erro 404 da Cloudflare em contêineres</h3>
+      <p>Ao testar uma aplicação Docker exposta através de um subdomínio (ex: <code>curl -I subdominio.seusite.com</code>) e receber resposta <code>HTTP/1.1 404 Not Found</code> contendo o cabeçalho <code>Server: cloudflare</code>:</p>
+      <ul>
+        <li>O cabeçalho confirma que o DNS está resolvendo corretamente para a rede da Cloudflare, mas a Cloudflare não encontrou um destino registrado para responder por aquele subdomínio específico.</li>
+      </ul>
+
+      <h4>Causas mais frequentes e correção:</h4>
+      <ol>
+        <li><strong>Cloudflare Tunnel (cloudflared):</strong> verifique no painel Zero Trust em <em>Networks &gt; Tunnels &gt; Seu Túnel &gt; Public Hostname</em> se existe uma regra mapeando o subdomínio para a porta interna do contêiner (ex: <code>http://localhost:8080</code>). Se a regra não existir, a Cloudflare responderá com 404.</li>
+        <li><strong>Cloudflare Pages ou Workers:</strong> se o subdomínio deveria apontar para um projeto no Pages ou Worker, o CNAME existe no DNS mas o subdomínio não foi adicionado na aba <em>Custom Domains</em> das configurações do projeto.</li>
+        <li><strong>Servidor de Origem / Proxy Reverso:</strong> se o subdomínio aponta para o IP da sua VM com o proxy Cloudflare ativo (nuvem laranja), certifique-se de que o bloco <code>server_name</code> do Nginx ou Traefik aceita requisições para aquele subdomínio específico.</li>
+      </ol>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 5: Página 404 personalizada -->
+    <!-- Seção 6: Imagens e scripts Python -->
+    <section id="otimizacao-imagens" class="wiki-section">
+      <h2>6. Imagens e scripts Python</h2>
+      <p>Instruções para processamento e otimização automatizada de mídias para web e cuidados de retrocompatibilidade em interpretadores Python.</p>
+
+      <h3 id="conversao-imagemagick">Conversão com ImageMagick e correção de rotação EXIF</h3>
+      <p>Ao converter imagens da câmera do celular (JPEG/PNG) para o formato moderno <strong>WebP</strong> via linha de comando ou scripts, as fotos tiradas na vertical podem aparecer rotacionadas de lado no navegador.</p>
+      <p>Isso acontece porque câmeras modernas gravam a orientação como um metadado EXIF em vez de girar a matriz de pixels real da imagem. O parâmetro <code>-auto-orient</code> faz o ImageMagick ler essa tag e ajustar a orientação dos pixels antes da compressão:</p>
+      <pre><code># Conversão individual com preservação de orientação e compressão otimizada:
+magick input.jpg -auto-orient -quality 82 output.webp
+
+# Em scripts legados de ImageMagick v6:
+convert input.jpg -auto-orient -quality 82 output.webp</code></pre>
+
+      <h3 id="compatibilidade-python">Compatibilidade de scripts no Python 3.6 (subprocess.run)</h3>
+      <p>O argumento <code>capture_output=True</code> da função <code>subprocess.run()</code> foi introduzido apenas no Python 3.7. Em máquinas com Python 3.6 instalado (como CentOS 7 ou ambientes corporativos antigos), sua execução resulta em erro imediato:</p>
+      <pre><code>TypeError: __init__() got an unexpected keyword argument 'capture_output'</code></pre>
+
+      <h4>Como reescrever a chamada para garantir compatibilidade com Python 3.6:</h4>
+      <pre><code>import subprocess
+
+# Incompatível com Python 3.6:
+# resultado = subprocess.run(["magick", "..."], capture_output=True, text=True)
+
+# Padrão compatível com Python 3.6, 3.7 e versões superiores:
+resultado = subprocess.run(
+    ["magick", "input.jpg", "-auto-orient", "-quality", "82", "output.webp"],
+    stdout=subprocess.PIPE,
+    stderr=subprocess.PIPE,
+    universal_newlines=True
+)</code></pre>
+
+      <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
+    </section>
+
+    <!-- Seção 7: Página 404 personalizada no Nginx -->
     <section id="pagina-404" class="wiki-section">
-      <h2>5. Página 404 personalizada no Nginx</h2>
-      <p>Permite exibir uma página visual personalizada sempre que um visitante tentar acessar uma rota inexistente no servidor.</p>
+      <h2>7. Página 404 personalizada no Nginx</h2>
+      <p>Como configurar o Nginx para exibir uma página 404 estilizada própria em vez da página de erro crua padrão do servidor.</p>
 
       <h3 id="config-404">Configuração no nginx.conf</h3>
-      <p>Dentro do bloco <code>server { ... }</code>, configure a diretiva <code>error_page</code> e a regra de correspondência exata com o parâmetro <code>internal</code> para restringir o acesso direto:</p>
-      <pre><code>server {
+      <ol>
+        <li>Certifique-se de que o seu site gera um arquivo chamado <code>404.html</code> na pasta raiz de publicação (ex: <code>_site/404.html</code>).</li>
+        <li>Abra o arquivo de configuração do Nginx no Termux:
+          <pre><code>nano $PREFIX/etc/nginx/nginx.conf</code></pre>
+        </li>
+        <li>Adicione as seguintes diretivas dentro do bloco <code>server</code>:
+          <pre><code>server {
     listen 8080;
     server_name localhost;
 
+    # Define a página para o código de erro 404
     error_page 404 /404.html;
 
-    location / {
-        root /data/data/com.termux/files/home/gustavoribeiro-net/_site;
-        index index.html;
-    }
-
+    # Localização interna da página de erro com root explícito
     location = /404.html {
         root /data/data/com.termux/files/home/gustavoribeiro-net/_site;
         internal;
     }
+
+    location / {
+        root /data/data/com.termux/files/home/gustavoribeiro-net/_site;
+        index index.html index.htm;
+    }
 }</code></pre>
+          <div class="callout callout-warning">
+            <strong>Atenção à diretiva internal:</strong> a diretiva <code>internal;</code> impede que visitantes acessem a URL <code>/404.html</code> diretamente pelo navegador. Além disso, declarar <code>root</code> explicitamente dentro do bloco <code>location = /404.html</code> garante que o Nginx localize o arquivo mesmo se a requisição original vier de uma rota inexistente.
+          </div>
+        </li>
+        <li>Valide as alterações e reinicie o servidor:
+          <pre><code>nginx -t
+pkill nginx &amp;&amp; nginx</code></pre>
+        </li>
+      </ol>
 
       <h3 id="testar-404">Como testar se a página 404 está funcionando</h3>
-      <ul>
-        <li><strong>Pelo navegador:</strong> acesse uma página que não existe (ex: <code>http://seusite.com/pagina-inexistente-123</code>).</li>
-        <li><strong>Pelo terminal (conferir o código HTTP 404):</strong>
-          <pre><code>curl -I http://localhost:8080/pagina-inexistente</code></pre>
-        </li>
-        <li><strong>Pelo terminal (conferir o conteúdo HTML entregue):</strong>
-          <pre><code>curl -s http://localhost:8080/pagina-inexistente | head -n 10</code></pre>
-        </li>
-      </ul>
+      <p>No terminal do celular ou do computador, faça uma requisição para um arquivo que não existe:</p>
+      <pre><code>curl -I http://localhost:8080/pagina-inexistente.html</code></pre>
+      <p>A resposta deve conter o cabeçalho <code>HTTP/1.1 404 Not Found</code> e o corpo da resposta deve trazer o HTML da sua página personalizada.</p>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 6: Cloudflare Tunnel -->
+    <!-- Seção 8: Publicação com Cloudflare Tunnel -->
     <section id="cloudflare-tunnel" class="wiki-section">
-      <h2>6. Publicação com Cloudflare Tunnel</h2>
+      <h2>8. Publicação com Cloudflare Tunnel</h2>
       <p>O Cloudflare Tunnel permite expor servidores locais para a internet de forma segura, sem abrir portas no roteador residencial ou depender de IP público fixo.</p>
 
       <h3 id="instalacao-cloudflared">Instalação do cloudflared no cliente (computador)</h3>
@@ -797,7 +1339,7 @@ cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
         </li>
       </ol>
 
-      <h3 id="gerenciamento-tunnels-cli">Gerenciamento de túneis via CLI</h3>
+      <h3 id="gerenciamento-tunnels-cli">Gerenciamento de tunnels via CLI</h3>
       <ul>
         <li><strong>Listar túneis existentes:</strong> <code>cloudflared tunnel list</code></li>
         <li><strong>Deletar um túnel antigo ou quebrado:</strong> <code>cloudflared tunnel delete NOME_OU_ID --force</code></li>
@@ -842,129 +1384,154 @@ cloudflared tunnel route dns meu-servidor www.seu-dominio.com</code></pre>
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 7: Segurança e WAF -->
+    <!-- Seção 9: Segurança e WAF -->
     <section id="seguranca-waf" class="wiki-section">
-      <h2>7. Segurança, WAF e bloqueio de robôs</h2>
+      <h2>9. Segurança, WAF e bloqueio de robôs</h2>
       <p>Servidores conectados à internet recebem constantes varreduras automáticas de robôs procurando falhas conhecidas, como diretórios de WordPress ou arquivos PHP desatualizados. Em um site estático, essas requisições recebem código 404 (arquivo não encontrado) e não comprometem o sistema.</p>
 
       <h3 id="bloqueio-cloudflare">Bloqueio na Cloudflare (recomendado para economizar recursos)</h3>
-      <ul>
-        <li><strong>Bot Fight Mode:</strong> no painel da Cloudflare, acesse <strong>Segurança &gt; Bots</strong> e ative a proteção automática para barrar robôs conhecidos.</li>
-        <li><strong>Regras de WAF personalizadas:</strong> em <strong>Segurança &gt; WAF</strong>, crie uma regra com ação <strong>Bloquear</strong> caso a URI contenha <code>/wp-</code> ou termine com <code>.php</code>.</li>
-        <li><strong>Restrição geográfica:</strong> configure o WAF para bloquear ou emitir desafio interativo (Managed Challenge) para países fora do Brasil.</li>
-        <li><strong>Cloudflare Access (Zero Trust):</strong> adicione uma camada de autenticação por e-mail (PIN) antes de liberar a abertura de páginas administrativas ou confidenciais.</li>
-      </ul>
+      <p>Bloquear o tráfego malicioso nas bordas da Cloudflare evita que o processador do celular e a bateria sejam consumidos processando requisições inúteis.</p>
+      <ol>
+        <li>No painel da Cloudflare, acesse seu domínio e vá em <strong>Security &gt; WAF &gt; Custom Rules &gt; Create Rule</strong>.</li>
+        <li>Defina o nome da regra (ex: <em>Bloqueio de Varreduras PHP e WordPress</em>).</li>
+        <li>Em <em>Field</em>, selecione <strong>URI Path</strong>.</li>
+        <li>Em <em>Operator</em>, selecione <strong>matches regex</strong> ou <strong>contains</strong>.</li>
+        <li>Adicione termos como <code>wp-admin</code>, <code>wp-login</code>, <code>xmlrpc.php</code>, <code>.env</code>, <code>phpmyadmin</code>.</li>
+        <li>Em <em>Action</em>, selecione <strong>Block</strong> e clique em <strong>Deploy</strong>.</li>
+      </ol>
 
       <h3 id="bloqueio-exploits-nginx">Bloqueio de invasões e SQL injection no Nginx</h3>
+      <p>Para proteger servidores Nginx diretamente na origem, adicione as regras padronizadas de bloqueio de exploits do Nginx Proxy Manager:</p>
       <ol>
-        <li>Baixe o conjunto de regras de bloqueio de exploits:
+        <li>Baixe a lista de regras para a pasta do Nginx no Termux:
           <pre><code>curl -o $PREFIX/etc/nginx/block-exploits.conf https://raw.githubusercontent.com/NginxProxyManager/nginx-proxy-manager/refs/heads/develop/docker/rootfs/etc/nginx/conf.d/include/block-exploits.conf</code></pre>
         </li>
-        <li>Inclua o arquivo dentro do bloco <code>server</code> no <code>$PREFIX/etc/nginx/nginx.conf</code>:
+        <li>Abra o arquivo <code>$PREFIX/etc/nginx/nginx.conf</code> e insira a diretiva dentro do bloco <code>server</code> do seu site:
           <pre><code>server {
     listen 8080;
     server_name localhost;
 
-    include block-exploits.conf;
+    include /data/data/com.termux/files/usr/etc/nginx/block-exploits.conf;
 
     location / {
-        root /data/data/com.termux/files/home/caminho-da-pasta;
+        root /data/data/com.termux/files/home/gustavoribeiro-net/_site;
         index index.html;
     }
 }</code></pre>
         </li>
-        <li>Valide e recarregue o servidor:
-          <pre><code>nginx -t &amp;&amp; nginx -s reload</code></pre>
+        <li>Valide e reinicie o servidor:
+          <pre><code>nginx -t
+nginx -s reload</code></pre>
         </li>
       </ol>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 8: Tmux e persistência -->
+    <!-- Seção 10: Sessões e persistência com Tmux -->
     <section id="execucao-continua" class="wiki-section">
-      <h2>8. Sessões e persistência com Tmux</h2>
-      <p>Para manter o Nginx, o túnel e eventuais scripts rodando após desconectar do SSH ou fechar o aplicativo:</p>
+      <h2>10. Sessões e persistência com Tmux</h2>
+      <p>O Android possui mecanismos agressivos de economia de bateria que encerram aplicativos em segundo plano. Para manter o Nginx, o túnel da Cloudflare e o servidor SSH ativos ininterruptamente, configure as permissões e o multiplexador de terminal <strong>Tmux</strong>.</p>
 
       <h3 id="evitar-suspensao-android">Evitar a suspensão pelo Android</h3>
-      <ul>
-        <li>Execute o comando de trava de processador:
+      <ol>
+        <li>No Termux, execute o comando de trava de suspensão:
           <pre><code>termux-wake-lock</code></pre>
+          <p>Uma notificação permanente <em>"Termux (wake lock held)"</em> será exibida na barra de status.</p>
         </li>
-        <li>Nas configurações do celular, vá em <strong>Aplicativos &gt; Termux &gt; Bateria</strong> e defina como <strong>Sem restrições</strong>.</li>
-      </ul>
+        <li>Nas <strong>Configurações do Android &gt; Aplicativos &gt; Termux &gt; Bateria</strong>, altere para <strong>Sem restrições</strong>.</li>
+      </ol>
 
       <h3 id="gerenciamento-tmux">Gerenciamento de sessões com Tmux</h3>
+      <p>O Tmux cria sessões virtuais no terminal que continuam rodando mesmo se a janela for fechada ou o SSH desconectar:</p>
       <ul>
-        <li><strong>Criar sessão nomeada:</strong> <code>tmux new -s site</code></li>
-        <li><strong>Listar todas as sessões:</strong> <code>tmux ls</code></li>
-        <li><strong>Reconectar a uma sessão:</strong> <code>tmux attach -t site</code></li>
-        <li><strong>Desconectar mantendo processos vivos:</strong> pressione <code>Ctrl + B</code> e depois <code>D</code>.</li>
-        <li><strong>Encerrar uma sessão nomeada:</strong> <code>tmux kill-session -t site</code></li>
-        <li><strong>Encerrar todas as sessões de uma vez:</strong> <code>tmux kill-server</code></li>
+        <li><strong>Instalar o Tmux:</strong> <code>pkg install tmux</code></li>
+        <li><strong>Criar sessão com nome:</strong> <code>tmux new -s tunnel</code></li>
+        <li><strong>Desconectar da sessão (Detach):</strong> pressione <strong><code>Ctrl + B</code></strong>, solte e aperte a tecla <strong><code>D</code></strong>.</li>
+        <li><strong>Reconectar à sessão (Attach):</strong> <code>tmux attach -t tunnel</code></li>
+        <li><strong>Listar sessões ativas:</strong> <code>tmux ls</code></li>
+        <li><strong>Encerrar uma sessão:</strong> <code>tmux kill-session -t tunnel</code></li>
       </ul>
 
       <h3 id="janelas-tmux">Múltiplas janelas dentro da mesma sessão</h3>
       <ul>
-        <li><strong>Criar nova janela:</strong> pressione <code>Ctrl + B</code> e depois <code>C</code>.</li>
-        <li><strong>Alternar entre janelas:</strong> pressione <code>Ctrl + B</code> e depois <code>N</code> (ou o número da janela).</li>
-        <li><strong>Dividir tela horizontalmente:</strong> pressione <code>Ctrl + B</code> e depois <code>"</code>.</li>
+        <li><strong>Criar nova janela:</strong> <code>Ctrl + B</code> seguido de <code>C</code>.</li>
+        <li><strong>Navegar para a próxima janela:</strong> <code>Ctrl + B</code> seguido de <code>N</code>.</li>
+        <li><strong>Navegar para a janela anterior:</strong> <code>Ctrl + B</code> seguido de <code>P</code>.</li>
+        <li><strong>Ir para janela específica pelo número:</strong> <code>Ctrl + B</code> seguido do número (ex: <code>0</code>, <code>1</code>).</li>
       </ul>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 9: SSH remoto -->
+    <!-- Seção 11: SSH remoto via Cloudflare -->
     <section id="ssh-remoto" class="wiki-section">
-      <h2>9. SSH remoto via Cloudflare</h2>
-      <p>Permite acessar o terminal do celular com segurança a partir de qualquer rede externa através de um subdomínio.</p>
+      <h2>11. SSH remoto via Cloudflare</h2>
+      <p>Procedimento para conectar com segurança ao terminal do celular a partir de qualquer lugar do mundo através do túnel da Cloudflare.</p>
 
       <h3 id="ssh-config-servidor">Configuração no servidor (Termux)</h3>
-      <p>Adicione o serviço SSH no arquivo <code>~/.cloudflared/config.yml</code>:</p>
-      <pre><code>ingress:
-  - hostname: seu-dominio.com
-    service: http://localhost:8080
-  - hostname: ssh.seu-dominio.com
-    service: ssh://localhost:8022
-  - service: http_status:404</code></pre>
-      <p>Crie a rota e reinicie o túnel:</p>
-      <pre><code>cloudflared tunnel route dns meu-servidor ssh.seu-dominio.com
-pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
+      <ol>
+        <li>Abra o arquivo de configuração do túnel em <code>nano ~/.cloudflared/config.yml</code>.</li>
+        <li>Adicione uma regra antes de <code>http_status:404</code> direcionando para o protocolo SSH na porta 8022:
+          <pre><code>  - hostname: ssh.seu-dominio.com
+    service: ssh://localhost:8022</code></pre>
+        </li>
+        <li>Crie a rota no DNS da Cloudflare:
+          <pre><code>cloudflared tunnel route dns meu-servidor ssh.seu-dominio.com</code></pre>
+        </li>
+        <li>Reinicie o túnel na sessão do Tmux.</li>
+      </ol>
 
       <h3 id="ssh-bloqueio-direto">Por que a conexão direta trava</h3>
-      <p>Tentar conectar diretamente com <code>ssh usuario@ssh.seu-dominio.com</code> faz o terminal travar sem resposta. Isso acontece porque a Cloudflare intercepta conexões como tráfego HTTP/HTTPS web comum e rejeita conexões diretas em protocolos TCP puros (como a porta 22 ou 8022 do SSH). Para funcionar, o computador precisa do utilitário <code>cloudflared</code> instalado para encapsular a conexão SSH dentro de um canal compatível com o túnel.</p>
+      <p>Ao tentar rodar <code>ssh u0_a229@ssh.seu-dominio.com</code> sem configuração prévia, a conexão trava e exibe <code>Connection timed out</code>. A rede proxy da Cloudflare opera por padrão em tráfego HTTP/HTTPS e barra conexões brutas de TCP puro.</p>
+      <p>A solução é utilizar o <code>cloudflared</code> no computador cliente através do <code>ProxyCommand</code>, que encapsula os pacotes SSH em um túnel WebSocket seguro até o celular.</p>
 
       <h3 id="ssh-linux-macos">Conectar a partir do Linux ou macOS</h3>
-      <p>Adicione ao arquivo <code>~/.ssh/config</code> do computador:</p>
-      <pre><code>Host ssh.seu-dominio.com
-  ProxyCommand cloudflared access ssh --hostname %h</code></pre>
-      <p>Conecte normalmente: <code>ssh u0_a229@ssh.seu-dominio.com</code>. O cliente SSH usará o <code>cloudflared</code> automaticamente em segundo plano para fazer a ponte.</p>
+      <ol>
+        <li>Instale o <code>cloudflared</code> no computador.</li>
+        <li>Edite o arquivo de configuração local em <code>nano ~/.ssh/config</code>:
+          <pre><code>Host celular-remoto
+    HostName ssh.seu-dominio.com
+    User u0_a229
+    Port 8022
+    ProxyCommand cloudflared access ssh --hostname %h</code></pre>
+        </li>
+        <li>Ajuste as permissões do arquivo:
+          <pre><code>chmod 600 ~/.ssh/config</code></pre>
+        </li>
+        <li>Conecte-se diretamente pelo apelido configurado:
+          <pre><code>ssh celular-remoto</code></pre>
+        </li>
+      </ol>
 
       <h3 id="ssh-windows">Conectar a partir do Windows</h3>
       <ol>
-        <li>Instale o utilitário pelo PowerShell: <code>winget install --id Cloudflare.cloudflared</code></li>
-        <li>Ajuste as permissões de segurança do arquivo de configuração:
+        <li>Baixe o binário para <code>C:\cloudflared\cloudflared.exe</code>.</li>
+        <li>Crie a pasta <code>.ssh</code> no seu usuário e edite o arquivo com <code>notepad C:\Users\SEU_USUARIO\.ssh\config</code>:
+          <pre><code>Host celular-remoto
+    HostName ssh.seu-dominio.com
+    User u0_a229
+    Port 8022
+    ProxyCommand C:/cloudflared/cloudflared.exe access ssh --hostname %h</code></pre>
+          <div class="callout callout-warning">
+            <strong>Atenção às barras no Windows:</strong> utilize barras normais (<code>/</code>) no caminho do <code>ProxyCommand</code> para evitar que o OpenSSH falhe com o erro <code>CreateProcessW failed error:2</code>.
+          </div>
+        </li>
+        <li>Corrija as permissões do arquivo no PowerShell para evitar o erro <em>Bad permissions on .ssh/config</em>:
           <pre><code>icacls "$env:USERPROFILE\.ssh\config" /inheritance:r /grant:r "$($env:USERNAME):F"</code></pre>
         </li>
-        <li>No arquivo <code>C:\Users\SEU_USUARIO\.ssh\config</code>, use barras normais (<code>/</code>) para o executável:
-          <pre><code>Host ssh.seu-dominio.com
-  ProxyCommand "C:/cloudflared/cloudflared.exe" access ssh --hostname %h
-# Se estiver nas variáveis de ambiente:
-# ProxyCommand cloudflared.exe access ssh --hostname %h</code></pre>
+        <li>Conecte-se pelo terminal:
+          <pre><code>ssh celular-remoto</code></pre>
         </li>
-        <li>Caso o Cloudflare Access esteja ativo, autentique antes pelo terminal:
-          <pre><code>cloudflared.exe access login https://ssh.seu-dominio.com</code></pre>
-        </li>
-        <li>Conecte via terminal: <code>ssh u0_a229@ssh.seu-dominio.com</code></li>
       </ol>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 10: Arquivos e Git -->
+    <!-- Seção 12: Arquivos, Rsync e Git -->
     <section id="gestao-arquivos-git" class="wiki-section">
-      <h2>10. Arquivos e Git (SCP, Rsync e fluxo Git)</h2>
-      <p>Procedimentos para sincronização de arquivos compilados, comportamento de barras na transferência e controle de versão completo com Git e GitHub.</p>
+      <h2>12. Arquivos, Rsync e Git (SCP, Rsync e GitHub)</h2>
+      <p>Procedimentos para sincronização de arquivos compilados, comportamento de barras na transferência, correção de erros no Rsync e controle de versão completo com Git e GitHub.</p>
 
       <h3 id="transferencia-rsync">Transferência com Rsync e SCP</h3>
       <p>O Rsync compara os arquivos locais e remotos, transferindo apenas o que foi alterado para economizar largura de banda e tempo:</p>
@@ -982,13 +1549,18 @@ pkill cloudflared &amp;&amp; cloudflared tunnel run meu-servidor</code></pre>
       </ul>
 
       <div class="callout callout-warning">
-        <strong>Atenção ao uso do parâmetro <code>-e</code>:</strong> a opção <code>-e</code> serve estritamente para especificar o comando do protocolo de conexão remota (ex: <code>-e ssh</code> ou <code>-e 'ssh -p 8022'</code>). Colocar o caminho de uma pasta logo após a opção <code>-e</code> (ex: <code>rsync -avz -e pasta/ ...</code>) faz o rsync tentar executar essa pasta como um programa, resultando no erro <code>exec on 'pasta/': Permission denied</code>. Remova a opção <code>-e</code> ou especifique <code>-e ssh</code>.
+        <strong>Atenção ao erro de uso do parâmetro <code>-e</code>:</strong>
+        <p>A opção <code>-e</code> serve estritamente para especificar o comando do protocolo de conexão remota (ex: <code>-e ssh</code> ou <code>-e 'ssh -p 8022'</code>). Colocar o caminho de uma pasta logo após a opção <code>-e</code> (ex: <code>rsync -avz -e pasta/ ...</code>) faz o rsync tentar executar essa pasta como um programa executável, disparando o erro:</p>
+        <pre><code>rsync(1450): error: exec on 'pasta/': Permission denied
+rsync(1449): error: unexpected end of file
+rsync(1449): warning: child 1450 exited with status 14</code></pre>
+        <p><strong>Correção:</strong> Remova a opção <code>-e</code> (o rsync já utiliza SSH por padrão quando há dois pontos <code>:</code> no destino) ou especifique o protocolo de forma explícita com <code>-e ssh</code>.</p>
       </div>
 
       <h3 id="rsync-dry-run">Simulação de transferência sem alterar arquivos (dry-run)</h3>
-      <p>Para testar e verificar quais arquivos seriam transferidos sem realizar qualquer modificação real no servidor, adicione a opção <code>-n</code> (ou <code>--dry-run</code>):</p>
+      <p>Para testar e verificar quais arquivos seriam transferidos sem realizar qualquer modificação real no servidor de destino, adicione a opção <code>-n</code> (ou <code>--dry-run</code>):</p>
       <pre><code>rsync -avzn deepclassicpress/ ssh.gustavoribeiro.net:~/ClassicPress-release-2.7.2/wp-content/themes/gustavoribeiro-net/</code></pre>
-      <p>O terminal exibirá a lista completa de arquivos que seriam afetados, permitindo validar os caminhos antes de executar a transferência definitiva.</p>
+      <p>O terminal exibirá a lista completa de arquivos que seriam copiados ou modificados, permitindo validar caminhos e permissões antes de aplicar a transferência definitiva.</p>
 
       <h3 id="ls-data-modificacao">Exibir data de modificação de arquivos com o comando ls</h3>
       <p>Para conferir se os arquivos foram atualizados recentemente no servidor ou na máquina local, utilize os seguintes parâmetros do comando <code>ls</code>:</p>
@@ -1045,15 +1617,42 @@ scp -r pasta/* usuario@servidor:/caminho/destino/</code></pre>
         </li>
       </ul>
 
-      <h3 id="autenticacao-github">Autenticação no GitHub</h3>
-      <p>O GitHub exige chaves SSH ou tokens de acesso pessoal no terminal em substituição a senhas convencionais.</p>
+      <h3 id="autenticacao-github">Autenticação e chaves SSH no GitHub</h3>
+      <p>O GitHub exige chaves SSH criptográficas ou tokens de acesso pessoal no terminal em substituição a senhas convencionais.</p>
 
-      <h4>Opção A: Chave SSH Ed25519 (recomendada)</h4>
+      <h4>Opção A: Chave SSH Ed25519 (Recomendada e moderna)</h4>
       <ol>
-        <li>Gere a chave: <code>ssh-keygen -t ed25519 -C "seu-email@dominio.com"</code></li>
-        <li>Copie a chave pública: <code>cat ~/.ssh/id_ed25519.pub</code></li>
-        <li>No GitHub, vá em <strong>Settings &gt; SSH and GPG keys &gt; New SSH Key</strong> e cole o conteúdo.</li>
-        <li>Altere a URL do repositório local para SSH:
+        <li>Abra o terminal e gere uma nova chave SSH usando seu e-mail do GitHub como etiqueta:
+          <pre><code>ssh-keygen -t ed25519 -C "seu-email@dominio.com"</code></pre>
+          <p>Pressione <code>Enter</code> para aceitar o local padrão (<code>~/.ssh/id_ed25519</code>) e digite uma frase secreta (passphrase) segura se desejar.</p>
+        </li>
+        <li><strong>Fallback para sistemas legados:</strong> se estiver utilizando um sistema muito antigo sem suporte a Ed25519, gere uma chave RSA de 4096 bits:
+          <pre><code>ssh-keygen -t rsa -b 4096 -C "seu-email@dominio.com"</code></pre>
+        </li>
+        <li><strong>Adicionar ao ssh-agent e Keychain (macOS):</strong>
+          <pre><code>ssh-add --apple-use-keychain ~/.ssh/id_ed25519</code></pre>
+        </li>
+        <li><strong>Copiar a chave pública para a área de transferência:</strong>
+          <ul>
+            <li>No macOS: <code>pbcopy &lt; ~/.ssh/id_ed25519.pub</code></li>
+            <li>No Linux / Termux: <code>cat ~/.ssh/id_ed25519.pub</code> (e copie o texto exibido)</li>
+          </ul>
+        </li>
+        <li><strong>Cadastrar no GitHub:</strong>
+          <ol>
+            <li>No GitHub, clique na foto de perfil no canto superior direito &gt; <strong>Settings</strong>.</li>
+            <li>Na seção <em>Access</em> da barra lateral, clique em <strong>SSH and GPG keys</strong>.</li>
+            <li>Clique em <strong>New SSH key</strong> (ou <em>Add SSH key</em>).</li>
+            <li>No campo <strong>Title</strong>, insira um nome descritivo (ex: <em>"MacBook Pessoal"</em> ou <em>"Termux Android"</em>).</li>
+            <li>No tipo de chave, selecione <strong>Authentication Key</strong> (ou <em>Signing Key</em> se for assinar commits).</li>
+            <li>Cole a chave no campo <strong>Key</strong> e clique em <strong>Add SSH key</strong>.</li>
+          </ol>
+        </li>
+        <li><strong>Testar a conexão com o GitHub:</strong>
+          <pre><code>ssh -T git@github.com</code></pre>
+          <p>O retorno deve confirmar a autenticação com sucesso: <em>"Hi usuario! You've successfully authenticated, but GitHub does not provide shell access."</em></p>
+        </li>
+        <li>Altere a URL do repositório local para utilizar SSH:
           <pre><code>git remote set-url origin git@github.com:gustavoribeirorg/gustavoribeiro.net.git</code></pre>
         </li>
       </ol>
@@ -1061,7 +1660,7 @@ scp -r pasta/* usuario@servidor:/caminho/destino/</code></pre>
       <h4>Opção B: Personal Access Token (PAT)</h4>
       <ol>
         <li>No GitHub, acesse <strong>Settings &gt; Developer settings &gt; Personal access tokens &gt; Tokens (classic)</strong>.</li>
-        <li>Gere um token com o escopo <code>repo</code> marcado e copie o código.</li>
+        <li>Gere um token com o escopo <code>repo</code> marcado e copie o código gerado.</li>
         <li>Salve a credencial no terminal para não digitar sempre:
           <pre><code>git config --global credential.helper store</code></pre>
         </li>
@@ -1075,103 +1674,84 @@ scp -r pasta/* usuario@servidor:/caminho/destino/</code></pre>
         <li><strong>Clonar repositório existente:</strong>
           <pre><code>git clone https://github.com/gustavoribeirorg/gustavoribeiro.net.git</code></pre>
         </li>
-        <li><strong>Adicionar repositório remoto:</strong>
+        <li><strong>Vincular repositório remoto:</strong>
           <pre><code>git remote add origin https://github.com/gustavoribeirorg/gustavoribeiro.net.git</code></pre>
+        </li>
+        <li><strong>Visualizar URLs remotas cadastradas:</strong>
+          <pre><code>git remote -v</code></pre>
         </li>
       </ul>
 
       <h3 id="git-fluxo-trabalho">Fluxo de trabalho diário e commits</h3>
       <ul>
-        <li><strong>Verificar status e arquivos modificados:</strong>
+        <li><strong>Verificar status das alterações:</strong>
           <pre><code>git status</code></pre>
         </li>
-        <li><strong>Adicionar todos os arquivos modificados e novos ao staging:</strong>
+        <li><strong>Adicionar todas as alterações:</strong>
           <pre><code>git add .</code></pre>
         </li>
-        <li><strong>Ver diferenças exatas antes de confirmar o commit:</strong>
-          <pre><code>git diff --staged</code></pre>
+        <li><strong>Criar um commit com mensagem:</strong>
+          <pre><code>git commit -m "feat: atualiza layout e novas rotas"</code></pre>
         </li>
-        <li><strong>Confirmar alterações com mensagem direta:</strong>
-          <pre><code>git commit -am "sua mensagem de commit aqui"</code></pre>
-        </li>
-        <li><strong>Puxar alterações do repositório remoto:</strong>
-          <pre><code>git pull origin main</code></pre>
-        </li>
-        <li><strong>Enviar alterações pela primeira vez (definindo upstream):</strong>
-          <pre><code>git push -u origin main</code></pre>
-        </li>
-        <li><strong>Enviar alterações nos próximos envios:</strong>
+        <li><strong>Enviar alterações para a branch principal:</strong>
           <pre><code>git push origin main</code></pre>
         </li>
-        <li><strong>Consultar histórico de commits:</strong>
-          <pre><code>git log</code></pre>
+        <li><strong>Atualizar o repositório local com alterações remotas:</strong>
+          <pre><code>git pull origin main</code></pre>
         </li>
       </ul>
 
       <h3 id="git-branches-merge">Gerenciamento de branches e merge</h3>
       <ul>
+        <li><strong>Criar e alternar para uma nova branch:</strong>
+          <pre><code>git checkout -b feature/nova-secao</code></pre>
+        </li>
         <li><strong>Listar branches locais:</strong>
           <pre><code>git branch</code></pre>
         </li>
-        <li><strong>Trocar para outro branch:</strong>
+        <li><strong>Alternar entre branches existentes:</strong>
           <pre><code>git checkout main</code></pre>
         </li>
-        <li><strong>Mesclar alterações de outro branch no atual:</strong>
-          <pre><code>git merge master</code></pre>
+        <li><strong>Mesclar uma branch na branch atual:</strong>
+          <pre><code>git merge feature/nova-secao</code></pre>
         </li>
-        <li><strong>Excluir branch local:</strong>
-          <pre><code>git branch -d master</code></pre>
-        </li>
-        <li><strong>Excluir branch no repositório remoto:</strong>
-          <pre><code>git push origin --delete master</code></pre>
+        <li><strong>Deletar uma branch após a mesclagem:</strong>
+          <pre><code>git branch -d feature/nova-secao</code></pre>
         </li>
       </ul>
 
       <h3 id="git-cache-gitignore">Limpeza de cache, remoção e .gitignore</h3>
-      <p>Gerenciamento de arquivos ignorados e correção do índice de rastreamento do Git.</p>
-
-      <h4>1. Criar o arquivo .gitignore</h4>
-      <pre><code>touch .gitignore</code></pre>
-
-      <h4>2. Desvincular pasta específica do Git mantendo os arquivos locais</h4>
-      <pre><code>git rm -r --cached nome-da-pasta/</code></pre>
-
-      <h4>3. Registrar modificações, criações e deleções com git add -A</h4>
-      <p>O comando <code>git add -A</code> (ou <code>git add -u</code> para itens já rastreados) registra no índice tudo o que foi alterado, criado e também o que foi apagado do disco:</p>
-      <pre><code>git add -A
-git commit -m "remove: deletando pastas antigas"
-git push</code></pre>
-
-      <h4>4. Reconstruir todo o rastreamento do zero</h4>
-      <p>Limpa a memória do índice do Git e a remonta a partir do zero com base apenas no que realmente existe na pasta no momento:</p>
-      <pre><code>git rm -r --cached .
+      <ul>
+        <li><strong>Remover arquivo mantendo no disco (apenas do Git):</strong>
+          <pre><code>git rm --cached arquivo.ext</code></pre>
+        </li>
+        <li><strong>Limpeza completa do índice para aplicar o .gitignore:</strong>
+          <pre><code>git rm -r --cached .
 git add .
-git commit -m "chore: limpar cache do git e remover arquivos inexistentes"
-git push</code></pre>
+git commit -m "chore: limpa arquivos rastreados ignorados pelo .gitignore"</code></pre>
+        </li>
+        <li><strong>Reverter alterações de um arquivo para o último commit:</strong>
+          <pre><code>git checkout -- arquivo.ext</code></pre>
+        </li>
+      </ul>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 11: Logs e GoAccess -->
+    <!-- Seção 13: Logs, GoAccess e IP real -->
     <section id="logs-goaccess" class="wiki-section">
-      <h2>11. Logs, GoAccess e IP real</h2>
-      <p>Por padrão, conexões repassadas pela Cloudflare chegam com o endereço do proxy (ou <code>127.0.0.1</code> pelo túnel). Para que o Nginx registre o IP real dos visitantes nas variáveis <code>$remote_addr</code> e nos arquivos de log, utiliza-se o módulo <code>ngx_http_realip_module</code>.</p>
+      <h2>13. Logs, GoAccess e IP real</h2>
+      <p>Instruções para visualizar logs de acessos, configurar o IP real repassado pelo proxy da Cloudflare e montar um painel estatístico em tempo real com o GoAccess.</p>
 
       <h3 id="capturar-ip-real">1. Capturar o IP real no Nginx</h3>
-      <p>Configuração completa baseada na lista oficial de faixas de IP da Cloudflare e loopback local:</p>
-
-      <h4>A. Verificar o suporte ao módulo Real IP</h4>
-      <p>Confirme se a compilação do Nginx inclui o módulo necessário:</p>
-      <pre><code>nginx -V 2>&1 | tr ' ' '\n' | grep realip
-# Deve exibir: --with-http_realip_module</code></pre>
-
-      <h4>B. Criar o arquivo cloudflare.conf</h4>
-      <p>Crie o arquivo com as faixas IPv4, IPv6 e loopback local em <code>nano $PREFIX/etc/nginx/cloudflare.conf</code>:</p>
-      <pre><code># Faixas locais e túnel
-set_real_ip_from 127.0.0.1;
-set_real_ip_from ::1;
-
-# Faixas IPv4 da Cloudflare
+      <p>Como todas as requisições passam pelos servidores da Cloudflare, os logs do Nginx gravariam apenas os IPs dos proxies da Cloudflare (geralmente faixas como <code>172.70.x.x</code> ou <code>108.162.x.x</code>) em vez do endereço dos visitantes.</p>
+      <p>Para registrar o IP real, o Nginx precisa ler o cabeçalho <code>CF-Connecting-IP</code> enviado pela Cloudflare:</p>
+      <ol>
+        <li>Crie um arquivo com a lista dos blocos de IP oficiais da Cloudflare:
+          <pre><code>nano $PREFIX/etc/nginx/cloudflare-ips.conf</code></pre>
+        </li>
+        <li>Cole o bloco de configuração abaixo:
+          <pre><code># Lista de IPs oficiais da Cloudflare para restaurar o IP real
 set_real_ip_from 173.245.48.0/20;
 set_real_ip_from 103.21.244.0/22;
 set_real_ip_from 103.22.200.0/22;
@@ -1187,8 +1767,6 @@ set_real_ip_from 104.16.0.0/13;
 set_real_ip_from 104.24.0.0/14;
 set_real_ip_from 172.64.0.0/13;
 set_real_ip_from 131.0.72.0/22;
-
-# Faixas IPv6 da Cloudflare
 set_real_ip_from 2400:cb00::/32;
 set_real_ip_from 2606:4700::/32;
 set_real_ip_from 2803:f800::/32;
@@ -1197,64 +1775,116 @@ set_real_ip_from 2405:8100::/32;
 set_real_ip_from 2a06:98c0::/29;
 set_real_ip_from 2c0f:f248::/32;
 
-# Cabeçalho enviado pela Cloudflare
 real_ip_header CF-Connecting-IP;</code></pre>
-
-      <h4>C. Incluir no nginx.conf e recarregar</h4>
-      <p>Abra o <code>$PREFIX/etc/nginx/nginx.conf</code> e adicione a diretiva dentro do bloco <code>http { ... }</code>:</p>
-      <pre><code>http {
-    include cloudflare.conf;
-    # ... restante da configuração
-}</code></pre>
-      <p>Valide e aplique as alterações: <code>nginx -t &amp;&amp; nginx -s reload</code>.</p>
+        </li>
+        <li>Abra o arquivo principal em <code>nano $PREFIX/etc/nginx/nginx.conf</code> e adicione dentro do bloco <code>http { ... }</code>:
+          <pre><code>include /data/data/com.termux/files/usr/etc/nginx/cloudflare-ips.conf;</code></pre>
+        </li>
+        <li>Reinicie o Nginx: <code>nginx -t &amp;&amp; nginx -s reload</code>.</li>
+      </ol>
 
       <h3 id="monitoramento-logs-terminal">2. Monitoramento de logs pelo terminal</h3>
       <ul>
-        <li><strong>Acompanhar acessos em tempo real:</strong> <code>tail -f $PREFIX/var/log/nginx/access.log</code></li>
-        <li><strong>Ver últimas 30 linhas e continuar ao vivo:</strong> <code>tail -n 30 -f $PREFIX/var/log/nginx/access.log</code></li>
-        <li><strong>Exibir todo o histórico:</strong> <code>cat $PREFIX/var/log/nginx/access.log</code></li>
-        <li><strong>Acompanhar erros e bloqueios:</strong> <code>tail -f $PREFIX/var/log/nginx/error.log</code></li>
+        <li><strong>Acompanhar acessos em tempo real:</strong>
+          <pre><code>tail -f $PREFIX/var/log/nginx/access.log</code></pre>
+        </li>
+        <li><strong>Visualizar últimas 50 linhas:</strong>
+          <pre><code>tail -n 50 $PREFIX/var/log/nginx/access.log</code></pre>
+        </li>
+        <li><strong>Filtrar requisições de um IP específico:</strong>
+          <pre><code>grep "192.168.3.10" $PREFIX/var/log/nginx/access.log</code></pre>
+        </li>
+        <li><strong>Filtrar apenas requisições que retornaram erro (404, 500, 403):</strong>
+          <pre><code>awk '$9 ~ /^(4|5)/' $PREFIX/var/log/nginx/access.log</code></pre>
+        </li>
+        <li><strong>Limpar o histórico de logs:</strong>
+          <pre><code>&gt; $PREFIX/var/log/nginx/access.log</code></pre>
+        </li>
       </ul>
 
       <h3 id="exibir-logs-navegador">3. Exibir logs no navegador</h3>
-      <h4>Opção A: Rota de texto puro no Nginx</h4>
-      <p>Adicione dentro do bloco <code>server { ... }</code> com sinal de correspondência exata (<code>=</code>) para evitar erros 404:</p>
-      <pre><code>location = /meus-logs {
-    alias /data/data/com.termux/files/usr/var/log/nginx/access.log;
+      <p>Caso queira visualizar o log cru diretamente pelo navegador através de uma rota protegida por senha ou restrita:</p>
+      <ol>
+        <li>Crie um link simbólico do arquivo de log para uma pasta pública do Nginx:
+          <pre><code>ln -s $PREFIX/var/log/nginx/access.log /data/data/com.termux/files/home/gustavoribeiro-net/_site/meulog.txt</code></pre>
+        </li>
+        <li>No bloco <code>server</code> do Nginx, force o tipo MIME como texto puro:
+          <pre><code>location = /meulog.txt {
     default_type text/plain;
 }</code></pre>
-      <p>Acesse em <code>http://seusite.com/meus-logs</code> (sem barra no final).</p>
-
-      <h4>Opção B: Link simbólico na pasta do site</h4>
-      <pre><code>ln -s $PREFIX/var/log/nginx/access.log ~/caminho-da-sua-pasta/logs.txt</code></pre>
-      <p>Acesse direto por <code>http://seusite.com/logs.txt</code>.</p>
+        </li>
+        <li>Acesse <code>https://seusite.com/meulog.txt</code>.</li>
+      </ol>
 
       <h3 id="painel-goaccess">4. Painel visual interativo com GoAccess</h3>
-      <h4>Modo sob demanda (estático - recomendado para economizar bateria)</h4>
-      <pre><code>pkg install goaccess -y
-goaccess $PREFIX/var/log/nginx/access.log -o ~/caminho-da-sua-pasta/relatorio.html --log-format=COMBINED</code></pre>
+      <p>O GoAccess transforma o arquivo de log bruto em um dashboard HTML completo com gráficos de visitantes únicos, páginas mais acessadas, sistemas operacionais e navegadores.</p>
 
-      <h4>Modo em tempo real com WebSocket</h4>
-      <p>No <code>nginx.conf</code>, configure o proxy WebSocket:</p>
-      <pre><code>location /ws {
+      <h4>1. Instalar o GoAccess</h4>
+      <pre><code>pkg install goaccess -y</code></pre>
+
+      <h4>2. Gerar relatório estático em HTML</h4>
+      <pre><code>goaccess $PREFIX/var/log/nginx/access.log -o /data/data/com.termux/files/home/gustavoribeiro-net/_site/stats.html --log-format=COMBINED</code></pre>
+      <p>Abra <code>https://seusite.com/stats.html</code> no navegador para visualizar o painel estático gerado.</p>
+
+      <h4>3. Dashboard dinâmico em tempo real via WebSocket</h4>
+      <p>Para que o painel atualize os gráficos automaticamente sem recarregar a página, configure o GoAccess com WebSocket reverso:</p>
+      <ol>
+        <li>No bloco <code>server</code> do Nginx, adicione a rota de proxy para o WebSocket:
+          <pre><code>location /ws {
     proxy_pass http://127.0.0.1:7890;
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
 }</code></pre>
-      <p>Execute o GoAccess em uma sessão do Tmux:</p>
-      <pre><code>goaccess $PREFIX/var/log/nginx/access.log -o ~/caminho-da-sua-pasta/relatorio.html --log-format=COMBINED --real-time-html --ws-url=wss://seusite.com/ws --port=7890</code></pre>
+        </li>
+        <li>Reinicie o Nginx: <code>nginx -s reload</code>.</li>
+        <li>Execute o GoAccess em tempo real dentro de uma janela do Tmux:
+          <pre><code>goaccess $PREFIX/var/log/nginx/access.log -o /data/data/com.termux/files/home/gustavoribeiro-net/_site/stats.html --log-format=COMBINED --real-time-html --ws-url=wss://seusite.com/ws --port=7890</code></pre>
+        </li>
+      </ol>
 
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 12: Aplicações Python em proot Debian e Uvicorn -->
+    <!-- Seção 14: Aplicações Python em proot Debian e Uvicorn -->
     <section id="proot-python-uvicorn" class="wiki-section">
-      <h2>12. Aplicações Python em proot Debian e Uvicorn</h2>
-      <p>Instruções para execução de aplicações web dinâmicas em Python (como FastAPI, Jekyll Writer e Uvicorn) isoladas em um ambiente Debian dentro do Termux.</p>
+      <h2>14. Aplicações Python (Termux, proot Debian e Uvicorn)</h2>
+      <p>Instruções para solucionar erros de compilação C/Rust no Termux nativo e executar aplicações web dinâmicas em Python (como FastAPI, Pydantic e Uvicorn) isoladas em ambiente Debian.</p>
+
+      <h3 id="erros-criptografia-python-termux">Erros de compilação e criptografia no Termux nativo</h3>
+      <p>Ao tentar instalar dependências de um projeto via <code>pip install -r requirements.txt</code> no ambiente nativo do Termux em processadores ARM (especialmente de 32 bits), bibliotecas que dependem de extensões nativas em Rust e C (como <code>cryptography</code>, <code>pillow</code>, <code>bcrypt</code> e <code>pydantic-core</code>) costumam falhar com mensagens de erro como:</p>
+      <pre><code>error: subprocess-exited-with-error
+Target triple not supported by rustup: arm-unknown-linux-androideabi
+Rust not found, installing into a temporary directory
+ERROR: Failed to build 'pydantic-core' / 'cryptography'</code></pre>
+
+      <h4>Por que isso acontece:</h4>
+      <ul>
+        <li>O instalador do pip tenta compilar o código em Rust a partir dos fontes e busca o compilador através do <code>rustup</code>, que não disponibiliza toolchains automáticas para a arquitetura <code>arm-unknown-linux-androideabi</code> do Android.</li>
+        <li>O processo de compilação dessas bibliotecas exige grande quantidade de memória RAM, frequentemente travando o terminal do celular ou sendo encerrado pelo kernel do Android com a mensagem <code>Killed</code>.</li>
+      </ul>
+
+      <h4>Solução 1: Instalar os pacotes pré-compilados pelo repositório do Termux (Recomendado)</h4>
+      <p>O gerenciador de pacotes <code>pkg</code> do Termux possui versões binárias pré-compiladas especificamente para a arquitetura do seu dispositivo:</p>
+      <pre><code>pkg update
+pkg install python-cryptography python-pillow python-bcrypt -y</code></pre>
+      <p>Após instalar esses pacotes nativos, execute novamente o pip:</p>
+      <pre><code>pip install -r requirements.txt</code></pre>
+      <p>O pip detectará que as extensões nativas já existem no ambiente e baixará apenas os módulos em Python puro sem recompilar nada.</p>
+
+      <h4>Solução 2: Compilar com compilador Rust nativo e --no-build-isolation</h4>
+      <p>Se o pacote exigir compilação (ex: <code>pydantic-core</code> / <code>maturin</code>), instale o Rust nativo do Termux e desative o isolamento de build do pip para que ele enxergue as ferramentas do sistema operacional:</p>
+      <pre><code>pkg install rust binutils -y
+pip install --no-build-isolation -r requirements.txt</code></pre>
+
+      <h4>Dica: Limpar o cache corrompido do pip</h4>
+      <p>Se o instalador continuar reutilizando builds incompletos ou corrompidos, limpe o cache antes da nova tentativa:</p>
+      <pre><code>pip cache purge
+# ou instale ignorando o cache:
+pip install --no-cache-dir -r requirements.txt</code></pre>
 
       <h3 id="instalacao-proot">Instalação e acesso ao proot-distro</h3>
-      <p>O <code>proot-distro</code> é o utilitário oficial do Termux para instalar e gerenciar distribuições Linux completas com espaço de usuário isolado.</p>
+      <p>Quando uma aplicação exigir um conjunto complexo de pacotes impossível de compilar no Termux nativo, o <code>proot-distro</code> é a melhor solução para rodar uma distribuição Linux completa com espaço de usuário isolado e bibliotecas glibc padrão.</p>
       <ol>
         <li>No terminal padrão do Termux, instale o gerenciador:
           <pre><code>pkg install proot-distro -y</code></pre>
@@ -1310,10 +1940,10 @@ pip install -r requirements.txt</code></pre>
       <a href="#topo" class="back-to-top">↑ Voltar ao topo</a>
     </section>
 
-    <!-- Seção 13: Resolução de problemas -->
+    <!-- Seção 15: Resolução de problemas -->
     <section id="solucao-problemas" class="wiki-section">
-      <h2>13. Resolução de problemas</h2>
-      <p>Tabela de referência para diagnóstico e resolução de erros comuns:</p>
+      <h2>15. Resolução de problemas</h2>
+      <p>Tabela de referência rápida para diagnóstico e resolução de erros comuns de rede, serviços, compilação e banco de dados:</p>
 
       <table>
         <thead>
@@ -1325,6 +1955,71 @@ pip install -r requirements.txt</code></pre>
         </thead>
         <tbody>
           <tr>
+            <td><code>rsync: error: exec on 'pasta/': Permission denied</code></td>
+            <td>Uso incorreto da opção <code>-e</code> no rsync com um diretório imediatamente após em vez do comando de shell remoto.</td>
+            <td>Remova a opção <code>-e</code> (o rsync já usa SSH por padrão) ou use <code>-e ssh</code> ou <code>-e 'ssh -p 8022'</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Conflict. The container name "/..." is already in use</code></td>
+            <td>Contêiner antigo parado ou em execução já está ocupando o nome configurado no Docker Compose.</td>
+            <td>Execute <code>sudo docker rm -f nome-do-container</code> e suba novamente com <code>sudo docker compose up -d --build</code>.</td>
+          </tr>
+          <tr>
+            <td><code>HTTP/1.1 404 Not Found (Server: cloudflare) em contêiner</code></td>
+            <td>DNS aponta para a Cloudflare, mas a rota pública (Public Hostname) não foi configurada no túnel ou Pages.</td>
+            <td>Acesse o painel Zero Trust &gt; Tunnels &gt; Public Hostname e aponte o subdomínio para a porta local correta (ex: <code>http://localhost:8080</code>).</td>
+          </tr>
+          <tr>
+            <td><code>mysqld_safe A mysqld process already exists</code></td>
+            <td>O servidor MariaDB já está ativo ou um arquivo <code>.pid</code> antigo ficou preso no disco do Termux.</td>
+            <td>Verifique com <code>pgrep mariadbd</code>. Se travado: <code>killall -9 mysqld 2&gt;/dev/null &amp;&amp; rm -f $PREFIX/var/lib/mysql/*.pid &amp;&amp; mariadbd-safe &amp;</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Error establishing a database connection (ClassicPress/WordPress)</code></td>
+            <td>O PHP não conseguiu conectar ao MariaDB. No Termux, o uso de <code>localhost</code> falha pela ausência do socket Unix padrão.</td>
+            <td>No <code>wp-config.php</code>, altere para <code>define( 'DB_HOST', '127.0.0.1' );</code> e confirme se o MariaDB está rodando com <code>pgrep mariadbd</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Bad system call ao executar pkill -f php-fpm</code></td>
+            <td>Restrições de segurança do kernel Android / seccomp bloqueiam a chamada de sistema usada pelo comando <code>pkill</code>.</td>
+            <td>Encerre o processo usando <code>killall php-fpm</code> ou <code>kill -9 $(pgrep php-fpm)</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Another FPM instance seems to already listen on php-fpm.sock</code></td>
+            <td>O arquivo de socket Unix do PHP-FPM permaneceu no disco após um encerramento anterior.</td>
+            <td>Exclua o socket com <code>rm -f $PREFIX/var/run/php-fpm.sock</code> e inicie o serviço novamente com <code>php-fpm</code>.</td>
+          </tr>
+          <tr>
+            <td><code>O ClassicPress não conseguiu estabelecer conexão segura com WordPress.org</code></td>
+            <td>O cURL e o OpenSSL do PHP no Termux não encontram a cadeia de certificados raiz de autoridade (CA).</td>
+            <td>Instale <code>pkg install ca-certificates -y</code> e adicione <code>curl.cainfo</code> e <code>openssl.cafile</code> em <code>$PREFIX/etc/php/conf.d/cacert.ini</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Unable to locate package php-pear (Imagick)</code></td>
+            <td>O repositório PEAR/PECL não existe nos repositórios oficiais do Termux.</td>
+            <td>Instale <code>imagemagick clang make autoconf</code>, clone <code>https://github.com/Imagick/imagick.git</code> e compile manualmente via <code>phpize</code>.</td>
+          </tr>
+          <tr>
+            <td><code>ERROR 1046 (3D000): No database selected</code></td>
+            <td>Consulta SQL executada sem especificar o banco de dados ativo.</td>
+            <td>Execute <code>SHOW DATABASES;</code> e selecione o banco com <code>USE nome_do_banco;</code> antes de rodar os comandos <code>SELECT</code> ou <code>UPDATE</code>.</td>
+          </tr>
+          <tr>
+            <td><code>OpaqueResponseBlocking / NS_ERROR_DOM_NETWORK_ERR após migração</code></td>
+            <td>O tema e as imagens continuam apontando para a URL do domínio antigo no banco de dados.</td>
+            <td>Defina <code>WP_HOME</code> e <code>WP_SITEURL</code> no <code>wp-config.php</code> e execute search &amp; replace no banco via WP-CLI ou SQL em <code>cp_posts</code> e <code>cp_options</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Página 404 ao redirecionar feed RSS /blog/rss.xml para /feed/</code></td>
+            <td>Links permanentes desativados no WordPress ou Nginx sem regra de repasse de rotas amigáveis.</td>
+            <td>Ative links permanentes em Configurações, garanta <code>try_files $uri $uri/ /index.php?$args;</code> no Nginx ou aponte o redirect para <code>/?feed=rss2</code>.</td>
+          </tr>
+          <tr>
+            <td><code>Target triple not supported by rustup / falha ao compilar cryptography ou pydantic</code></td>
+            <td>O instalador do pip tenta compilar extensões em Rust para ARM 32-bit Android sem toolchain compatível.</td>
+            <td>Instale os pacotes pré-compilados nativos com <code>pkg install python-cryptography python-pillow python-bcrypt</code> ou use o ambiente Debian no proot.</td>
+          </tr>
+          <tr>
             <td><code>Aplicação Python para ao fechar a sessão SSH na VM</code></td>
             <td>A desconexão da sessão encerra os processos vinculados ao terminal.</td>
             <td>Rode a aplicação com <code>nohup python3 app.py &amp;</code>, execute dentro de uma sessão <code>tmux</code> ou configure um serviço no systemd (<code>/etc/systemd/system/meuservidor.service</code>).</td>
@@ -1333,11 +2028,6 @@ pip install -r requirements.txt</code></pre>
             <td><code>Servidor Python não responde via IP público na Oracle Cloud</code></td>
             <td>Porta bloqueada no firewall do SO ou nas regras da Security List.</td>
             <td>Abra a porta utilizada no firewall interno da VM (<code>iptables</code>/<code>ufw</code>) e adicione uma regra de entrada (Ingress Rule) na Security List no painel da Oracle Cloud.</td>
-          </tr>
-          <tr>
-            <td><code>rsync: error: exec on 'pasta/': Permission denied / unexpected end of file</code></td>
-            <td>Uso incorreto da opção <code>-e</code> no rsync passando o caminho de uma pasta em vez do comando remote shell.</td>
-            <td>Remova a opção <code>-e</code> ou declare o protocolo explicitamente (ex: <code>-e ssh</code>).</td>
           </tr>
           <tr>
             <td><code>Connection refused (porta 8022)</code></td>
